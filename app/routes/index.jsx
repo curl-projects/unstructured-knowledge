@@ -1,4 +1,7 @@
 import D3Canvas from "~/components/D3Canvas.js"
+import { useEffect, useState } from 'react';
+import _ from "underscore";
+var gaussian = require('gaussian');
 
 const data = [
   {year: 1980, efficiency: 24.3, sales: 8949000},
@@ -34,18 +37,144 @@ const data = [
 ]
 
 export default function Index() {
+
+  // Generate roughly uniform distribution with gaussian noise over data range
+  // Uses a (0,0) oriented coordinate system
+
+  function generateUniformCoords(data, xName, yName){
+    let xVals = data.map(a => a[xName])
+    let yVals = data.map(a => a[yName])
+    const xMax = Math.max(...xVals)
+    const yMax = Math.max(...yVals)
+
+    const xMin = Math.min(...xVals)
+    const yMin = Math.min(...yVals)
+
+    const coordsArray = []
+    for(let idx in data){
+      let obj = {}
+      obj[xName] = (Math.random() * (xMax-xMin)) + xMin
+      obj[yName] = (Math.random() * (yMax-yMin)) + yMin
+
+      coordsArray.push(obj)
+    }
+
+    return coordsArray
+  }
+
+  function generateClusterCoords(data, xName, yName, clusters){
+    let xVals = data.map(a => a[xName])
+    let yVals = data.map(a => a[yName])
+    const xMax = Math.max(...xVals)
+    const yMax = Math.max(...yVals)
+
+    const xMin = Math.min(...xVals)
+    const yMin = Math.min(...yVals)
+
+    const clusterCoordsArray = []
+
+    for(let i in clusters){
+      let obj = {}
+      obj[xName] = (Math.random() * (xMax-xMin)) + xMin
+      obj[yName] = (Math.random() * (yMax-yMin)) + yMin
+
+      clusterCoordsArray.push(obj)
+    }
+    return clusterCoordsArray
+  }
+
+  function generateClusterUnitCoords(data, xName, yName, clusterCoordsArray, dispersionFactor=0.2){
+    let xVals = data.map(a => a[xName])
+    let yVals = data.map(a => a[yName])
+    const xMax = Math.max(...xVals)
+    const yMax = Math.max(...yVals)
+
+    const xMin = Math.min(...xVals)
+    const yMin = Math.min(...yVals)
+
+    const clusterUnits = []
+
+    for(let i in data){
+      let obj = {}
+
+      let cluster = _.sample(clusterCoordsArray, 1)[0]
+
+      let xGauss = gaussian(0, (xMax-xMin)/60)
+
+
+      let yGauss = gaussian(0, (yMax-yMin)/0.0001)
+
+      // console.log('XGAUSS', xGauss.random(1))
+      obj[xName] = cluster[xName] + xGauss.random(1)[0]
+      obj[yName] = cluster[yName] + yGauss.random(1)[0]
+      clusterUnits.push(obj)
+    }
+    return clusterUnits
+  }
+
+  const [dataObj, setDataObj] = useState(generateUniformCoords(_.sample(data, 20), 'efficiency', 'sales'))
+  const [other, setOther] = useState(false)
+
+
+  function sampleData(e){
+    console.log("sampled")
+    setDataObj(_.sample(data, 20))
+    setOther(prevState => !prevState)
+  }
+
+  function uniformlyDistributeData(e){
+    const coordsArray = generateUniformCoords(_.sample(data, 20), 'efficiency', 'sales')
+    setDataObj(coordsArray)
+    setOther(prevState => !prevState)
+  }
+
+  function clusterData(e){
+    const clusters = [1, 2, 3]
+
+    // generate uniformly distributed cluster coordinates
+    const clusterCoordsArray = generateClusterCoords(_.sample(data, 20), 'efficiency', 'sales', clusters)
+    const clusterUnitsArray = generateClusterUnitCoords(_.sample(data, 20), 'efficiency', 'sales', clusterCoordsArray)
+
+    console.log("CLUSTERS:", clusterCoordsArray)
+    setDataObj(clusterUnitsArray)
+    setOther(prevState => !prevState)
+    }
+
+
   return (
     <div style={{
         display: "flex",
         justifyContent: "center",
         alignItems: 'center'
       }}>
-      <D3Canvas data={data}/>
+      <D3Canvas data={dataObj} other={other}/>
+        <button
+          onClick={sampleData}
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            right: 100,
+            height: '40px',
+            width: '60px'
+          }}>Randomly Move points</button>
+          <button
+            onClick={clusterData}
+            style={{
+              position: 'absolute',
+              bottom: 30,
+              right: 180,
+              height: '40px',
+              width: '60px'
+            }}>Cluster Data</button>
+            <button
+              onClick={uniformlyDistributeData}
+              style={{
+                position: 'absolute',
+                bottom: 30,
+                right: 260,
+                height: '40px',
+                width: '60px'
+              }}>Uniformly Distribute Data</button>
     </div>
-    // <div className='page-wrapper'>
-    //   <div className='message-box-alignment'>
-    //
-    //   </div>
-    // </div>
   );
 }

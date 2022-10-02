@@ -1,62 +1,84 @@
 import { useD3 } from '~/utils/useD3';
-import React from 'react';
+import React, {useEffect} from 'react';
 import * as d3 from 'd3';
 
 
 
-export default function D3Canvas({ data }) {
+export default function D3Canvas({ data, other }) {
+  useEffect(()=>{
+    // console.log("DATA:", data)
+
+    // X-AXIS
+    var x = d3.scaleLinear()
+    .domain([20, 40])
+    .range([0, ref.current.clientWidth]);
+
+
+    // Y-AXIS
+    var y = d3.scaleLinear()
+      .domain([4000000, 11100000])
+      .range([ref.current.clientHeight, 0]);
+
+
+    const circles = d3.select(ref.current)
+                      .selectAll('circle')
+    console.log("CIRCLES", circles)
+    circles.data(data)
+    circles.transition()
+           .duration(1000)
+           .ease(d3.easeCubicInOut)
+           .attr("stroke", 'red')
+           .attr('cx', d => x(d.efficiency))
+           .attr('cy', d => y(d.sales))
+           // .on("end", () => {
+           //   console.log("Finished!")
+           // })
+  }, [other])
 
   const ref = useD3(
     (svg) => {
-
       const margin = {top: 0, right: 0, bottom: 0, left: 0};
       const width = ref.current.clientWidth;
       const height = ref.current.clientHeight;
 
       svg
-        // .attr("width", width)
-        // .attr("height", height)
+        .transition()
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", [0, 0, width, height])
 
-
-        // .attr("viewBox", [0, 0, width, height])
-        // .append("g")
-        //     .attr("transform",
-        //           "translate(" + margin.left + "," + margin.top + ")");
+      // svg.selectAll("*").remove();
 
       // X-AXIS
       var x = d3.scaleLinear()
       .domain([20, 40])
       .range([0, ref.current.clientWidth]);
       svg.append("g")
-        // .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
       // Y-AXIS
       var y = d3.scaleLinear()
-        .domain([6000000, 9500000])
+        .domain([4000000, 11100000])
         .range([ref.current.clientHeight, 0]);
       svg.append("g")
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
         .call(d3.axisLeft(y));
 
+      // PLOTTING
 
       svg.append("g")
         .selectAll("dot")
         .data(data)
-        .enter()
-        .append('circle')
+        .join('circle')
           .attr('cx', d => x(d.efficiency))
           .attr('cy', d => y(d.sales))
           .attr('r', 5)
           .attr('fill', "#69b3a2")
-
     },
     [data.length]
   );
 
   return (
+    <>
     <svg
       ref={ref}
       style={{
@@ -66,6 +88,7 @@ export default function D3Canvas({ data }) {
       }}
     >
     </svg>
+    </>
   );
 }
 
