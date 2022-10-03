@@ -9,10 +9,6 @@ export default function D3Canvas({ data }) {
   const yDomain = [0, 1]
 
   useEffect(()=>{
-    console.log("DATA!:", data)
-  }, [])
-
-  useEffect(()=>{
     // X-AXIS
     var x = d3.scaleLinear()
     .domain(xDomain)
@@ -27,7 +23,7 @@ export default function D3Canvas({ data }) {
 
     const circles = d3.select(ref.current)
                       .selectAll('circle')
-    console.log("CIRCLES", circles)
+
     circles.data(data)
     circles.transition()
            .duration(1000)
@@ -35,9 +31,6 @@ export default function D3Canvas({ data }) {
            .attr("stroke", 'red')
            .attr('cx', d => x(d.xDim))
            .attr('cy', d => y(d.yDim))
-           // .on("end", () => {
-           //   console.log("Finished!")
-           // })
   }, [data])
 
   const ref = useD3(
@@ -97,9 +90,8 @@ export default function D3Canvas({ data }) {
 
       const brush = d3.brush()
                       .on("start brush end", brushed)
+                      .on("end", filterBrushedStreamData)
       svg.call(brush);
-
-
 
       const dots = svg.append("g")
         .selectAll("dot")
@@ -137,6 +129,15 @@ export default function D3Canvas({ data }) {
           dots.style("#69b3a2")
         }
       }
+
+      function filterBrushedStreamData({selection}){
+        if(selection){
+          const [[x0, y0], [x1, y1]] = selection;
+          const dataPoints = dots.filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
+          console.log("BRUSHED DATA POINTS!", dataPoints.data())
+        }
+      }
+
     },
     [data.length]
   );
@@ -147,11 +148,6 @@ export default function D3Canvas({ data }) {
       id="canvas-svg"
       ref={ref}
       className='canvasSVG'
-      style={{
-        // height: "95vh",
-        // width: "95vw",
-        // border: '10px solid pink'
-      }}
     >
     </svg>
     </>
