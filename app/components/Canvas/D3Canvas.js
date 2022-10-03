@@ -95,6 +95,12 @@ export default function D3Canvas({ data }) {
         svg.select(`#annotation-${id}`).remove()
       }
 
+      const brush = d3.brush()
+                      .on("start brush end", brushed)
+      svg.call(brush);
+
+
+
       const dots = svg.append("g")
         .selectAll("dot")
         .data(data)
@@ -115,11 +121,8 @@ export default function D3Canvas({ data }) {
                 tearDownAnnotation(d)
               })
 
-      // REGION SELECTION
-      const brush = d3.brush()
-        .on("start brush end", brushed)
 
-      svg.call(brush)
+      // // REGION SELECTION
 
       function brushed({selection}){
         let value = [];
@@ -133,7 +136,6 @@ export default function D3Canvas({ data }) {
         } else {
           dots.style("#69b3a2")
         }
-        svg.property("value", value).dispatch("input")
       }
     },
     [data.length]
