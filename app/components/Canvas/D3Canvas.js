@@ -9,6 +9,10 @@ export default function D3Canvas({ data }) {
   const yDomain = [0, 1]
 
   useEffect(()=>{
+    console.log("DATA!:", data)
+  }, [])
+
+  useEffect(()=>{
     // X-AXIS
     var x = d3.scaleLinear()
     .domain(xDomain)
@@ -47,8 +51,6 @@ export default function D3Canvas({ data }) {
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", [0, 0, width, height])
 
-      // svg.selectAll("*").remove();
-
       // X-AXIS
       var x = d3.scaleLinear()
       .domain(xDomain)
@@ -64,58 +66,75 @@ export default function D3Canvas({ data }) {
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
         .call(d3.axisLeft(y));
 
-      // PLOTTING
-      var tooltip = d3.select("svg")
-        .append("div")
-        .style("position", "absolute")
-        .style('bottom', '200')
-        .style('right', '200')
-        .style("z-index", "10")
-        .style("visibility", "hidden")
-        .style("background", "#000")
-        .text("a simple tooltip");
+      // CIRCLE CREATION AND CANVAS ANIMATIONS
+      function generateAnnotation(d, event){
+        const [x,y] = d3.pointer(event);
+        const id = d.target.__data__.id
+        const message = d.target.__data__.message
+        const fr = d.target.__data__.fr
 
-      var circ = d3.symbolCircle
-      svg.append("g")
+        const foreignObjectHtml = (
+        `
+          <h1 style={{font-size: 800}}>${fr}</h1>
+          <p>${message}</p>
+        `
+        )
+        d3.select("svg").append("foreignObject")
+        .attr("width", 200)
+        .attr('id', `annotation-${id}`)
+        .attr("height", 200)
+        .attr("x", x)
+        .attr("y", y)
+        .append("xhtml:div")
+          .style("font", "8px 'Helvetica Neue'")
+          .html(foreignObjectHtml);
+      }
+
+      function tearDownAnnotation(d){
+        const id = d.target.__data__.id
+        svg.select(`#annotation-${id}`).remove()
+      }
+
+      const dots = svg.append("g")
         .selectAll("dot")
         .data(data)
         .join('circle')
+          .attr('id', d => `fr-${d.id}`)
           .attr('cx', d => x(d.xDim))
           .attr('cy', d => y(d.yDim))
           .attr('r', 5)
           .attr('fill', "#69b3a2")
-            .on("click", function(d){
-              const [x,y] = d3.pointer(event);
-              const id = d.target.__data__.id
-
-
-              console.log('SELECTION!:', svg.select(`#node-${id}`).empty())
-              if(svg.select(`#node-${id}`).empty()){
-                d3.select("svg").append("foreignObject")
-                .attr("width", 200)
-                .attr('id', `node-${d.target.__data__.id}`)
-                .attr("height", 200)
-                .attr("x", x)
-                .attr("y", y)
-                .append("xhtml:div")
-                  .style("font", "8px 'Helvetica Neue'")
-                  .html("<h1>An HTML Foreign Object in SVG</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu enim quam. ");
-                }
-              else{
-                svg.select(`#node-${id}`).remove()
-              }
+            // .on("click", function(d){
+            //   const [x,y] = d3.pointer(event);
+            //   svg.select(`#annotation-${d.target.__data__.id}`).empty() ? generateAnnotation(d, event) : tearDownAnnotation(d)
+            //   })
+              .on("mouseover", function(d){
+                  generateAnnotation(d, event)
+                })
+              .on("mouseout", function(d){
+                tearDownAnnotation(d)
               })
-          //   .on("click", function(d){
-          //     console.log("CLICK!", d);
-          //
-          // })
-          // .append("div")
-          //   .style("width", function(d) { return x(d) + "px"; })
-          //   .text(function(d) { return d; })
-          //   .on("mouseover", function(d){console.log("MOUSEOVER!"); tooltip.text(d); return tooltip.style("visibility", "visible");})
-          //   .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-          //   .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
+      // REGION SELECTION
+      const brush = d3.brush()
+        .on("start brush end", brushed)
+
+      svg.call(brush)
+
+      function brushed({selection}){
+        let value = [];
+        if (selection){
+          const [[x0, y0], [x1, y1]] = selection;
+          dots.style("fill", "#69b3a2")
+              .filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
+              .style("fill", "red")
+              .data();
+
+        } else {
+          dots.style("#69b3a2")
+        }
+        svg.property("value", value).dispatch("input")
+      }
     },
     [data.length]
   );
@@ -123,11 +142,13 @@ export default function D3Canvas({ data }) {
   return (
     <>
     <svg
+      id="canvas-svg"
       ref={ref}
+      className='canvasSVG'
       style={{
-        height: "95vh",
-        width: "95vw",
-        border: '10px solid pink'
+        // height: "95vh",
+        // width: "95vw",
+        // border: '10px solid pink'
       }}
     >
     </svg>
