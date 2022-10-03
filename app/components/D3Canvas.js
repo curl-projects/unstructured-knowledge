@@ -4,19 +4,20 @@ import * as d3 from 'd3';
 
 
 
-export default function D3Canvas({ data, other }) {
-  useEffect(()=>{
-    // console.log("DATA:", data)
+export default function D3Canvas({ data }) {
+  const xDomain = [0, 1]
+  const yDomain = [0, 1]
 
+  useEffect(()=>{
     // X-AXIS
     var x = d3.scaleLinear()
-    .domain([20, 40])
+    .domain(xDomain)
     .range([0, ref.current.clientWidth]);
 
 
     // Y-AXIS
     var y = d3.scaleLinear()
-      .domain([4000000, 11100000])
+      .domain(yDomain)
       .range([ref.current.clientHeight, 0]);
 
 
@@ -28,12 +29,12 @@ export default function D3Canvas({ data, other }) {
            .duration(1000)
            .ease(d3.easeCubicInOut)
            .attr("stroke", 'red')
-           .attr('cx', d => x(d.efficiency))
-           .attr('cy', d => y(d.sales))
+           .attr('cx', d => x(d.xDim))
+           .attr('cy', d => y(d.yDim))
            // .on("end", () => {
            //   console.log("Finished!")
            // })
-  }, [other])
+  }, [data])
 
   const ref = useD3(
     (svg) => {
@@ -50,29 +51,71 @@ export default function D3Canvas({ data, other }) {
 
       // X-AXIS
       var x = d3.scaleLinear()
-      .domain([20, 40])
+      .domain(xDomain)
       .range([0, ref.current.clientWidth]);
       svg.append("g")
         .call(d3.axisBottom(x));
 
       // Y-AXIS
       var y = d3.scaleLinear()
-        .domain([4000000, 11100000])
+        .domain(yDomain)
         .range([ref.current.clientHeight, 0]);
       svg.append("g")
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
         .call(d3.axisLeft(y));
 
       // PLOTTING
+      var tooltip = d3.select("svg")
+        .append("div")
+        .style("position", "absolute")
+        .style('bottom', '200')
+        .style('right', '200')
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("background", "#000")
+        .text("a simple tooltip");
 
+      var circ = d3.symbolCircle
       svg.append("g")
         .selectAll("dot")
         .data(data)
         .join('circle')
-          .attr('cx', d => x(d.efficiency))
-          .attr('cy', d => y(d.sales))
+          .attr('cx', d => x(d.xDim))
+          .attr('cy', d => y(d.yDim))
           .attr('r', 5)
           .attr('fill', "#69b3a2")
+            .on("click", function(d){
+              const [x,y] = d3.pointer(event);
+              const id = d.target.__data__.id
+
+
+              console.log('SELECTION!:', svg.select(`#node-${id}`).empty())
+              if(svg.select(`#node-${id}`).empty()){
+                d3.select("svg").append("foreignObject")
+                .attr("width", 200)
+                .attr('id', `node-${d.target.__data__.id}`)
+                .attr("height", 200)
+                .attr("x", x)
+                .attr("y", y)
+                .append("xhtml:div")
+                  .style("font", "8px 'Helvetica Neue'")
+                  .html("<h1>An HTML Foreign Object in SVG</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu enim quam. ");
+                }
+              else{
+                svg.select(`#node-${id}`).remove()
+              }
+              })
+          //   .on("click", function(d){
+          //     console.log("CLICK!", d);
+          //
+          // })
+          // .append("div")
+          //   .style("width", function(d) { return x(d) + "px"; })
+          //   .text(function(d) { return d; })
+          //   .on("mouseover", function(d){console.log("MOUSEOVER!"); tooltip.text(d); return tooltip.style("visibility", "visible");})
+          //   .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
+          //   .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+
     },
     [data.length]
   );
