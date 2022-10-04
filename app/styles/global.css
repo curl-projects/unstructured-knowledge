@@ -48,6 +48,15 @@ body{
   align-items: center;
 }
 
+.messageStreamMetadataRow{
+  border: 2px solid grey;
+  width: 90%;
+  margin-bottom: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
+}
+
 .messageCard{
   border: 2px solid black;
   width: 90%;

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
+import MessageStreamMetadata from "~/components/MessageStream/MessageStreamMetadata"
 import MessageCard from "~/components/MessageStream/MessageCard"
-
-
+import SearchBar from "~/components/Search/SearchBar"
 
 export default function MessageStreamWrapper(props){
   useEffect(()=>{
@@ -10,12 +10,11 @@ export default function MessageStreamWrapper(props){
 
   return(
     <div className='messageStreamWrapper'>
-      <div className="searchBarWrapper">
-      <input className="searchBar" />
-      <button className="searchButton">Search</button>
-
-      </div>
+      <SearchBar />
       <div className='messageStream'>
+        <MessageStreamMetadata
+          data={props.data}
+          />
         {props.data.map((cardData, idx) => (
           <MessageCard
             key={idx}
