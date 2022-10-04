@@ -8,7 +8,7 @@ export default function D3CanvasWrapper(props){
   const [yMin, yMax] = [0, 1]
 
   const [dataObj, setDataObj] = useState(generateUniformCoords(props.data, 'xDim', 'yDim', 'index'))
-
+  const [clusters, setClusters] = useState([])
 
   // UNIFORM POINTS
   function generateUniformCoords(data, xName, yName, idName){
@@ -40,6 +40,7 @@ export default function D3CanvasWrapper(props){
 
     for(let i=0; i<=max; i++){
       let obj = {}
+      obj["id"] = i
       obj[xName] = (Math.random() * (xMax-xMin)) + xMin
       obj[yName] = (Math.random() * (yMax-yMin)) + yMin
 
@@ -71,12 +72,14 @@ export default function D3CanvasWrapper(props){
     const clusterCoordsArray = generateClusterCoords(props.data, 'xDim', 'yDim', 'kmeans_labels')
     const clusterUnitsArray = generateClusterUnitCoords(props.data, 'xDim', 'yDim', 'index', 'kmeans_labels', clusterCoordsArray)
     setDataObj(clusterUnitsArray)
+    setClusters(clusterCoordsArray)
     }
 
   return(
     <div className="canvasWrapper">
     <D3Canvas
       data={dataObj}
+      clusters={clusters}
       style={{height: "100%"}}
       filterBrushedData={props.filterBrushedData}
       resetBrushFilter={props.resetBrushFilter}

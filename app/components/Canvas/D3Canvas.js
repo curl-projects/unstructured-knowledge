@@ -4,11 +4,15 @@ import * as d3 from 'd3';
 
 
 
-export default function D3Canvas({ data, filterBrushedData, resetBrushFilter }) {
+export default function D3Canvas({ data, clusters, filterBrushedData, resetBrushFilter }) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
   useEffect(()=>{
+    d3.select(ref.current)
+      .selectAll(".clusterNode")
+      .remove()
+
     // X-AXIS
     var x = d3.scaleLinear()
     .domain(xDomain)
@@ -32,6 +36,38 @@ export default function D3Canvas({ data, filterBrushedData, resetBrushFilter }) 
            .attr('cx', d => x(d.xDim))
            .attr('cy', d => y(d.yDim))
   }, [data])
+
+  // ADD AND TEAR DOWN CLUSTERS
+  useEffect(()=>{
+
+    // X-AXIS
+    var x = d3.scaleLinear()
+    .domain(xDomain)
+    .range([0, ref.current.clientWidth]);
+
+
+    // Y-AXIS
+    var y = d3.scaleLinear()
+      .domain(yDomain)
+      .range([ref.current.clientHeight, 0]);
+
+    // console.log("CLUSTERS!", clusters)
+    // d3.select(ref.current)
+    //   .selectAll(".clusterNode")
+    //   .remove()
+
+    d3.select('svg')
+      .append("g")
+      .selectAll('dot')
+        .data(clusters)
+        .join('circle')
+          .transition(1000)
+          .attr("r", 30)
+          .attr('class', "clusterNode")
+          .attr('cx', d => x(d.xDim))
+          .attr('cy', d => y(d.yDim))
+          .attr('fill', "black")
+  }, [clusters])
 
   const ref = useD3(
     (svg) => {

@@ -29,7 +29,6 @@ export async function action({ request }){
   return json(data)
 }
 
-
 export default function Index() {
   const actionData = useActionData();
   const [topLevelCanvasDataObj, setTopLevelCanvasDataObj] = useState(data)
