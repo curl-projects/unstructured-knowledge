@@ -9,9 +9,6 @@ export default function D3CanvasWrapper(props){
 
   const [dataObj, setDataObj] = useState(generateUniformCoords(props.data, 'xDim', 'yDim', 'index'))
 
-  useEffect(()=>{
-    console.log("DATAOBJ!", dataObj)
-  }, [dataObj])
 
   // UNIFORM POINTS
   function generateUniformCoords(data, xName, yName, idName){
@@ -58,8 +55,6 @@ export default function D3CanvasWrapper(props){
       let cluster = data[idx][labelName]
 
       let xGauss = gaussian(0, (xMax-xMin)/dispersionFactor)
-
-
       let yGauss = gaussian(0, (yMax-yMin)/dispersionFactor)
 
       obj["id"] = data[idx][idName]
@@ -75,9 +70,6 @@ export default function D3CanvasWrapper(props){
     // generate uniformly distributed cluster coordinates
     const clusterCoordsArray = generateClusterCoords(props.data, 'xDim', 'yDim', 'kmeans_labels')
     const clusterUnitsArray = generateClusterUnitCoords(props.data, 'xDim', 'yDim', 'index', 'kmeans_labels', clusterCoordsArray)
-
-    console.log("CLUSTER COORDS:", clusterCoordsArray)
-    console.log("CLUSTERS:", clusterUnitsArray)
     setDataObj(clusterUnitsArray)
     }
 
@@ -86,6 +78,8 @@ export default function D3CanvasWrapper(props){
     <D3Canvas
       data={dataObj}
       style={{height: "100%"}}
+      filterBrushedData={props.filterBrushedData}
+      resetBrushFilter={props.resetBrushFilter}
       />
     <button
       onClick={clusterData}

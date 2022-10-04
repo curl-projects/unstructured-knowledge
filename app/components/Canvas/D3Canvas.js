@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 
 
 
-export default function D3Canvas({ data }) {
+export default function D3Canvas({ data, filterBrushedData, resetBrushFilter }) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
@@ -90,7 +90,12 @@ export default function D3Canvas({ data }) {
 
       const brush = d3.brush()
                       .on("start brush end", brushed)
-                      .on("end", filterBrushedStreamData)
+                      .on("end", function({selection}){
+                        filterBrushedStreamData({selection})
+                        if(!selection){
+                          resetBrushFilter()
+                        }
+                      })
       svg.call(brush);
 
       const dots = svg.append("g")
@@ -134,7 +139,7 @@ export default function D3Canvas({ data }) {
         if(selection){
           const [[x0, y0], [x1, y1]] = selection;
           const dataPoints = dots.filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
-          console.log("BRUSHED DATA POINTS!", dataPoints.data())
+          filterBrushedData(dataPoints.data())
         }
       }
 
