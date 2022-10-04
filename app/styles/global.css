@@ -98,3 +98,13 @@ body{
   border: 10px solid pink;
   box-sizing: border-box;
 }
+
+/* CANVAS D3 CLASSES */
+/* .featureRequestCircle{
+  transition: 1s linear all;
+} */
+
+.searchSelected{
+  transition: 1s linear all;
+  fill: black !important;
+}

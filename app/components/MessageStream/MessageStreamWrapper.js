@@ -4,13 +4,15 @@ import MessageCard from "~/components/MessageStream/MessageCard"
 import SearchBar from "~/components/Search/SearchBar"
 
 export default function MessageStreamWrapper(props){
-  useEffect(()=>{
-    console.log("MESSAGE STREAM DATA", props.data)
-  }, [props])
+  // useEffect(()=>{
+  //   console.log("MESSAGE STREAM DATA", props.data)
+  // }, [props])
 
   return(
     <div className='messageStreamWrapper'>
-      <SearchBar />
+      <SearchBar
+        resetSearchData={props.resetSearchData}
+        />
       <div className='messageStream'>
         <MessageStreamMetadata
           data={props.data}

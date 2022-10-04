@@ -4,10 +4,29 @@ import * as d3 from 'd3';
 
 
 
-export default function D3Canvas({ data, clusters, filterBrushedData, resetBrushFilter }) {
+export default function D3Canvas({ data, clusters, searchResults, filterBrushedData, resetBrushFilter}) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
+  useEffect(()=>{
+    console.log("DATA", data, data.length)
+  }, [data])
+  // useEffect(()=>{
+  //   console.log("EXECUTED!")
+  //   if(searchResults && searchResults.length !== 0){
+  //     const stringSearchResults = searchResults.map(a => `#fr-${a}`)
+  //     const activePoints = d3.select(ref.current)
+  //       .selectAll(stringSearchResults.join(","))
+  //         .classed("searchSelected", true)
+  //   }
+  //   if(searchResults && searchResults.length === 0){
+  //     d3.select(ref.current)
+  //       .selectAll('.searchSelected')
+  //       .classed("searchSelected", false)
+  //   }
+  // }, [searchResults])
+
+  // CLUSTERING ANIMATION
   useEffect(()=>{
     d3.select(ref.current)
       .selectAll(".clusterNode")
@@ -59,7 +78,7 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
     //   .remove()
 
     d3.select('svg')
-      .append("g")
+      .insert("g", "#dotlayer")
       .selectAll('dot')
         .data(clusters)
         .join('circle')
@@ -73,6 +92,8 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
             .delay(500)
             .attr("r", 35)
             .style('opacity', 0.2)
+
+
   }, [clusters])
 
   const ref = useD3(
@@ -140,7 +161,7 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
                       })
       svg.call(brush);
 
-      const dots = svg.append("g")
+      const dots = svg.append("g").attr('id', 'dotlayer')
         .selectAll("dot")
         .data(data)
         .join('circle')

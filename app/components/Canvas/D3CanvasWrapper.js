@@ -80,6 +80,7 @@ export default function D3CanvasWrapper(props){
     <D3Canvas
       data={dataObj}
       clusters={clusters}
+      searchResults={props.searchResults}
       style={{height: "100%"}}
       filterBrushedData={props.filterBrushedData}
       resetBrushFilter={props.resetBrushFilter}
