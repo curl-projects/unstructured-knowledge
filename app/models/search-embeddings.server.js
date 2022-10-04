@@ -1,25 +1,23 @@
+const { Configuration, OpenAIApi } = require("openai");
+
+
 export async function generateSearchVector(searchString){
-  let url = "https://api.openai.com/v1/embeddings"
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_KEY,
+  });
 
-  let data = {
+  const openai = new OpenAIApi(configuration);
+  const response = await openai.createEmbedding({
     "model": "text-search-babbage-query-001",
-    "input": searchString
-  }
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer" + process.env.OPENAI_KEY,
-      "Content-Type": 'application/json'
-    },
-    body: JSON.stringify(data)
+    "input": searchString,
+    "user": "Unstructured-Knowledge"
   })
 
-  return res.json()
+  return response.data
 }
 
 export async function getKNNfromSearchVector(vector, topK=1){
-  let url = "https://embedding-db-ea3137b.svc.us-west1-gcp.pinecone.io/query"
+  let url = "https://unstructured-knowledge-af6dd93.svc.us-west1-gcp.pinecone.io/query"
 
   let data = {
     "vector": vector,
@@ -31,7 +29,7 @@ export async function getKNNfromSearchVector(vector, topK=1){
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Api-Key": process.env.PINECONE_KEY
+      "Api-Key": "ec67d11a-4487-4f47-8456-6e4ad8933c5e"
     },
     body: JSON.stringify(data)
   })

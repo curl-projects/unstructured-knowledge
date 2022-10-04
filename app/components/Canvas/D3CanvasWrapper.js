@@ -7,19 +7,19 @@ export default function D3CanvasWrapper(props){
   const [xMin, xMax] = [0, 1]
   const [yMin, yMax] = [0, 1]
 
-  const [dataObj, setDataObj] = useState(generateUniformCoords(props.data, 'xDim', 'yDim', 'index'))
+  const [dataObj, setDataObj] = useState(generateUniformCoords(props.data))
   const [clusters, setClusters] = useState([])
 
   // UNIFORM POINTS
-  function generateUniformCoords(data, xName, yName, idName){
+  function generateUniformCoords(data){
     const coordsArray = []
     for(let idx in data){
       let obj = {}
-      obj["id"] = data[idx][idName]
-      obj["message"] = data[idx]["prompt"]
-      obj["fr"] = data[idx]["feature requests"]
-      obj[xName] = (Math.random() * (xMax-xMin)) + xMin
-      obj[yName] = (Math.random() * (yMax-yMin)) + yMin
+      obj["fr_id"] = data[idx]['fr_id']
+      obj["message"] = data[idx]["message"]
+      obj["fr"] = data[idx]["fr"]
+      obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
+      obj['yDim'] = (Math.random() * (yMax-yMin)) + yMin
 
       coordsArray.push(obj)
     }
@@ -27,12 +27,12 @@ export default function D3CanvasWrapper(props){
     return coordsArray
   }
   function uniformlyDistributeData(e){
-    const coordsArray = generateUniformCoords(props.data, 'xDim', 'yDim', 'index')
+    const coordsArray = generateUniformCoords(props.data)
     setDataObj(coordsArray)
   }
 
   // CLUSTERED POINTS
-  function generateClusterCoords(data, xName, yName, labelName){
+  function generateClusterCoords(data, labelName){
     const labels = data.map(a => a[labelName])
     const max = Math.max(...labels)
 
@@ -41,14 +41,14 @@ export default function D3CanvasWrapper(props){
     for(let i=0; i<=max; i++){
       let obj = {}
       obj["id"] = i
-      obj[xName] = (Math.random() * (xMax-xMin)) + xMin
-      obj[yName] = (Math.random() * (yMax-yMin)) + yMin
+      obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
+      obj['yDim'] = (Math.random() * (yMax-yMin)) + yMin
 
       clusterCoordsArray.push(obj)
     }
     return clusterCoordsArray
   }
-  function generateClusterUnitCoords(data, xName, yName, idName, labelName, clusterCoordsArray, dispersionFactor=10000){
+  function generateClusterUnitCoords(data, labelName, clusterCoordsArray, dispersionFactor=10000){
     const clusterUnits = []
 
     for(let idx in data){
@@ -58,19 +58,19 @@ export default function D3CanvasWrapper(props){
       let xGauss = gaussian(0, (xMax-xMin)/dispersionFactor)
       let yGauss = gaussian(0, (yMax-yMin)/dispersionFactor)
 
-      obj["id"] = data[idx][idName]
-      obj["message"] = data[idx]["prompt"]
-      obj["fr"] = data[idx]["feature requests"]
-      obj[xName] = clusterCoordsArray[cluster][xName] + xGauss.random(1)[0]
-      obj[yName] = clusterCoordsArray[cluster][yName] + yGauss.random(1)[0]
+      obj["fr_id"] = data[idx]["fr_id"]
+      obj["message"] = data[idx]["message"]
+      obj["fr"] = data[idx]["fr"]
+      obj['xDim'] = clusterCoordsArray[cluster]['xDim'] + xGauss.random(1)[0]
+      obj['yDim'] = clusterCoordsArray[cluster]['yDim'] + yGauss.random(1)[0]
       clusterUnits.push(obj)
     }
     return clusterUnits
   }
   function clusterData(e){
     // generate uniformly distributed cluster coordinates
-    const clusterCoordsArray = generateClusterCoords(props.data, 'xDim', 'yDim', 'kmeans_labels')
-    const clusterUnitsArray = generateClusterUnitCoords(props.data, 'xDim', 'yDim', 'index', 'kmeans_labels', clusterCoordsArray)
+    const clusterCoordsArray = generateClusterCoords(props.data, 'kmeans_labels')
+    const clusterUnitsArray = generateClusterUnitCoords(props.data, 'kmeans_labels', clusterCoordsArray)
     setDataObj(clusterUnitsArray)
     setClusters(clusterCoordsArray)
     }

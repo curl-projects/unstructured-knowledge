@@ -11,7 +11,9 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
   useEffect(()=>{
     d3.select(ref.current)
       .selectAll(".clusterNode")
-      .remove()
+      .transition(1000)
+        .attr("r", 0)
+        .style("opacity", 0)
 
     // X-AXIS
     var x = d3.scaleLinear()
@@ -61,12 +63,16 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
       .selectAll('dot')
         .data(clusters)
         .join('circle')
-          .transition(1000)
-          .attr("r", 30)
+          .attr("r", 0)
+          .style('opacity', 0)
           .attr('class', "clusterNode")
           .attr('cx', d => x(d.xDim))
           .attr('cy', d => y(d.yDim))
-          .attr('fill', "black")
+          .attr('fill', "blue")
+          .transition(1000)
+            .delay(500)
+            .attr("r", 35)
+            .style('opacity', 0.2)
   }, [clusters])
 
   const ref = useD3(
@@ -98,7 +104,7 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
       // CIRCLE CREATION AND CANVAS ANIMATIONS
       function generateAnnotation(d, event){
         const [x,y] = d3.pointer(event);
-        const id = d.target.__data__.id
+        const fr_id = d.target.__data__.fr_id
         const message = d.target.__data__.message
         const fr = d.target.__data__.fr
 
@@ -110,7 +116,7 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
         )
         d3.select("svg").append("foreignObject")
         .attr("width", 200)
-        .attr('id', `annotation-${id}`)
+        .attr('id', `annotation-${fr_id}`)
         .attr("height", 200)
         .attr("x", x)
         .attr("y", y)
@@ -120,8 +126,8 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
       }
 
       function tearDownAnnotation(d){
-        const id = d.target.__data__.id
-        svg.select(`#annotation-${id}`).remove()
+        const fr_id = d.target.__data__.fr_id
+        svg.select(`#annotation-${fr_id}`).remove()
       }
 
       const brush = d3.brush()
@@ -138,7 +144,7 @@ export default function D3Canvas({ data, clusters, filterBrushedData, resetBrush
         .selectAll("dot")
         .data(data)
         .join('circle')
-          .attr('id', d => `fr-${d.id}`)
+          .attr('id', d => `fr-${d.fr_id}`)
           .attr('cx', d => x(d.xDim))
           .attr('cy', d => y(d.yDim))
           .attr('r', 5)

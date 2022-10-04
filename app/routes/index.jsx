@@ -17,16 +17,18 @@ import data from "~/mock-data/final_output.json"
 export async function action({ request }){
   const formData = await request.formData()
   const searchString = await formData.get("searchString")
-  console.log("SEARCH STRING:", searchString)
-  // const searchVector = await generateSearchVector()
-  // const knnIDs = getKNNfromSearchVector(searchVector, topK=10)
+  const searchVectorRes = await generateSearchVector(searchString)
+  const searchVector = searchVectorRes.data && searchVectorRes.data[0]['embedding']
+
+  const knn = await getKNNfromSearchVector(searchVector, topK=10)
+  const knnIds = knn.matches
 
   const data = {
-    // knnIDs: knnIDs
-    searchString: searchString
+    knnIDs: knnIDs
+    searchVector: searchVector
   }
 
-  return json(data)
+  return json({})
 }
 
 export default function Index() {
@@ -40,9 +42,9 @@ export default function Index() {
 
   function filterBrushedData(brushedData){
     console.log("BRUSHED DATA", brushedData)
-    let dataIds = brushedData.map(a => a.id)
-
-    const filteredData = data.filter(({index}) => dataIds.includes(index))
+    let dataIds = brushedData.map(a => a.fr_id)
+    console.log("DATA ID!", dataIds)
+    const filteredData = data.filter(({fr_id}) => dataIds.includes(fr_id))
     console.log("FILTERED DATA", filteredData)
     setTopLevelStreamDataObj(filteredData)
   }
