@@ -9,16 +9,12 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
   const yDomain = [0, 1]
 
   useEffect(()=>{
-    console.log("DATA", data, data.length)
-  }, [data])
-
-  useEffect(()=>{
     console.log("EXECUTED!")
     if(searchResults && searchResults.length !== 0){
       const stringSearchResults = searchResults.map(a => `#fr-${a}`)
       const activePoints = d3.select(ref.current)
         .selectAll(stringSearchResults.join(","))
-          // .classed("searchSelected", true)
+          .classed("searchSelected", true)
     }
     if(searchResults && searchResults.length === 0){
       d3.select(ref.current)
@@ -47,11 +43,10 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       .range([ref.current.clientHeight, 0]);
 
 
-    const circles = d3.select(ref.current)
-                      .selectAll('circle')
-
-    circles.data(data)
-    circles.transition()
+      d3.select(ref.current)
+        .selectAll('circle')
+        .data(data)
+        .transition()
            .duration(1000)
            .ease(d3.easeCubicInOut)
            .attr("stroke", 'red')

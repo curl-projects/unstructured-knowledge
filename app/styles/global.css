@@ -100,11 +100,12 @@ body{
 }
 
 /* CANVAS D3 CLASSES */
-/* .featureRequestCircle{
+.featureRequestCircle{
   transition: 1s linear all;
-} */
+}
 
 .searchSelected{
   transition: 1s linear all;
   fill: black !important;
+  r: 10;
 }

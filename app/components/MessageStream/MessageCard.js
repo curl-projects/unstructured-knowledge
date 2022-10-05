@@ -2,6 +2,9 @@ import * as d3 from 'd3';
 
 export default function MessageCard(props){
 
+  const options = {day: 'numeric', month: "long", year: "numeric"};
+  const date = props.cardData.created_at ? new Date(props.cardData.created_at).toLocaleDateString('default', options ) : "n.d.";
+
   function handleMouseOver(event, fr_id){
     d3.select(`#fr-${fr_id}`)
     .transition()
@@ -26,6 +29,7 @@ export default function MessageCard(props){
       onMouseOut={event=>handleMouseOut(event, props.cardData.fr_id)}
       >
       <h4>{props.cardData && props.cardData.fr}</h4>
+      <p>{props.cardData && props.cardData.author}    {date}</p>
       <p>{props.cardData.message}</p>
     </div>
   )
