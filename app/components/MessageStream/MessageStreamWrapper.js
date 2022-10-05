@@ -16,6 +16,7 @@ export default function MessageStreamWrapper(props){
       <div className='messageStream'>
         <MessageStreamMetadata
           data={props.data}
+          zoomObject={props.zoomObject}
           />
         {props.data.map((cardData, idx) => (
           <MessageCard

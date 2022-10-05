@@ -9,7 +9,6 @@ export default function D3CanvasWrapper(props){
 
   const [dataObj, setDataObj] = useState(generateUniformCoords(props.data))
   const [clusters, setClusters] = useState([])
-  const [zoomObject, setZoomObject] = useState(null)
 
   // UNIFORM POINTS
   function generateUniformCoords(data){
@@ -71,7 +70,7 @@ export default function D3CanvasWrapper(props){
     return clusterUnits
   }
   function clusterData(e){
-    setZoomObject(null)
+    props.setZoomObject(null)
     // generate uniformly distributed cluster coordinates
     const clusterCoordsArray = generateClusterCoords(props.data, 'kmeans_labels')
     const clusterUnitsArray = generateClusterUnitCoords(props.data, 'kmeans_labels', clusterCoordsArray)
@@ -80,8 +79,12 @@ export default function D3CanvasWrapper(props){
     }
 
   function changeZoom(e, changeParam){
-    console.log('CHANGE PARAM', changeParam)
-    setZoomObject(changeParam)
+    if(!changeParam){
+      props.resetZoomedData()
+    }
+    else{
+      props.setZoomObject(changeParam)
+    }
   }
 
   return(
@@ -90,8 +93,8 @@ export default function D3CanvasWrapper(props){
       data={dataObj}
       clusters={clusters}
       searchResults={props.searchResults}
-      zoomObject={zoomObject}
-      setZoomObject={setZoomObject}
+      zoomObject={props.zoomObject}
+      setZoomObject={props.setZoomObject}
       style={{height: "100%"}}
       filterBrushedData={props.filterBrushedData}
       resetBrushFilter={props.resetBrushFilter}

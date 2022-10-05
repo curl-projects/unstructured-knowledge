@@ -38,7 +38,7 @@ export default function Index() {
   const [searchResults, setSearchResults] = useState([])
   const [topLevelCanvasDataObj, setTopLevelCanvasDataObj] = useState(data)
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
-
+  const [zoomObject, setZoomObject] = useState(null)
 
   useEffect(()=>{
     console.log("INDEX DATA", data)
@@ -51,12 +51,15 @@ export default function Index() {
     }
   }, [actionData])
 
+  useEffect(()=>{
+    if(zoomObject){
+      filterZoomedData(zoomObject)
+    }
+  }, [zoomObject])
+
   function filterBrushedData(brushedData){
-    console.log("BRUSHED DATA", brushedData)
     let dataIds = brushedData.map(a => a.fr_id)
-    console.log("DATA ID!", dataIds)
     const filteredData = data.filter(({fr_id}) => dataIds.includes(fr_id))
-    console.log("FILTERED DATA", filteredData)
     setTopLevelStreamDataObj(filteredData)
   }
 
@@ -77,17 +80,32 @@ export default function Index() {
     setSearchResults([])
   }
 
+  function filterZoomedData(zoomObject){
+    const filteredData = data.filter(obj => obj.kmeans_labels === zoomObject)
+    setTopLevelStreamDataObj(filteredData)
+  }
+
+  function resetZoomedData(e, changeParam){
+    setZoomObject(null)
+    setTopLevelStreamDataObj(data)
+  }
+
   return (
     <div className="pageWrapper">
       <MessageStreamWrapper
         data={topLevelStreamDataObj}
         resetSearchData={resetSearchData}
+        zoomObject={zoomObject}
+        setZoomObject={setZoomObject}
         />
       <D3CanvasWrapper
         data={topLevelCanvasDataObj}
         searchResults={searchResults}
         filterBrushedData={filterBrushedData}
         resetBrushFilter={resetBrushFilter}
+        zoomObject={zoomObject}
+        setZoomObject={setZoomObject}
+        resetZoomedData={resetZoomedData}
         />
     </div>
   );

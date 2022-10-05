@@ -145,7 +145,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
             .attr("r", 35)
             .style('opacity', 0.2)
 
-    console.log('CLUSTERS', clusters)
 // LABELS
     d3.select('#labellayer')
       .selectAll("text")
@@ -165,14 +164,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         .delay(500)
         .duration(500)
         .style('font-size', '20px');
-
-        // .attr('text-anchor', 'middle')
-      // .attr({
-      //   "fill": 'black',
-      //   'alignment-baseline': 'before-edge',
-      //   'text-anchor': 'middle',
-      // })
-
   }, [clusters])
 
   const ref = useD3(
