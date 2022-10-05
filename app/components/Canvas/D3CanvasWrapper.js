@@ -9,7 +9,7 @@ export default function D3CanvasWrapper(props){
 
   const [dataObj, setDataObj] = useState(generateUniformCoords(props.data))
   const [clusters, setClusters] = useState([])
-  const [zoomCluster, setZoomCluster] = useState(null)
+  const [zoomObject, setZoomObject] = useState(null)
 
   // UNIFORM POINTS
   function generateUniformCoords(data){
@@ -36,18 +36,18 @@ export default function D3CanvasWrapper(props){
   // CLUSTERED POINTS
   function generateClusterCoords(data, labelName){
     const labels = data.map(a => a[labelName])
-    const max = Math.max(...labels)
-
+    const clusterLabels = Array.from(new Set(labels))
     const clusterCoordsArray = []
 
-    for(let i=0; i<=max; i++){
+    for(let i in clusterLabels){
       let obj = {}
-      obj["id"] = i
+      obj["id"] = clusterLabels[i]
       obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
       obj['yDim'] = (Math.random() * (yMax-yMin)) + yMin
 
       clusterCoordsArray.push(obj)
     }
+    console.log("CLUSTER COORDS ARRAY", clusterCoordsArray)
     return clusterCoordsArray
   }
   function generateClusterUnitCoords(data, labelName, clusterCoordsArray, dispersionFactor=10000){
@@ -56,7 +56,7 @@ export default function D3CanvasWrapper(props){
     for(let idx in data){
       let obj = {}
       let cluster = data[idx][labelName]
-
+      console.log("CLUSTER")
       let xGauss = gaussian(0, (xMax-xMin)/dispersionFactor)
       let yGauss = gaussian(0, (yMax-yMin)/dispersionFactor)
 
@@ -64,8 +64,8 @@ export default function D3CanvasWrapper(props){
       obj["message"] = data[idx]["message"]
       obj["fr"] = data[idx]["fr"]
       obj['kmeans_labels'] = data[idx]["kmeans_labels"]
-      obj['xDim'] = clusterCoordsArray[cluster]['xDim'] + xGauss.random(1)[0]
-      obj['yDim'] = clusterCoordsArray[cluster]['yDim'] + yGauss.random(1)[0]
+      obj['xDim'] = clusterCoordsArray.find(clus => clus.id === cluster)['xDim'] + xGauss.random(1)[0]
+      obj['yDim'] = clusterCoordsArray.find(clus => clus.id === cluster)['yDim'] + yGauss.random(1)[0]
       clusterUnits.push(obj)
     }
     return clusterUnits
@@ -78,8 +78,9 @@ export default function D3CanvasWrapper(props){
     setClusters(clusterCoordsArray)
     }
 
-  function testZoom(e){
-    setZoomCluster(1)
+  function changeZoom(e, changeParam){
+    console.log('CHANGE PARAM', changeParam)
+    setZoomObject(changeParam)
   }
 
   return(
@@ -88,7 +89,8 @@ export default function D3CanvasWrapper(props){
       data={dataObj}
       clusters={clusters}
       searchResults={props.searchResults}
-      zoomCluster={zoomCluster}
+      zoomObject={zoomObject}
+      setZoomObject={setZoomObject}
       style={{height: "100%"}}
       filterBrushedData={props.filterBrushedData}
       resetBrushFilter={props.resetBrushFilter}
@@ -116,7 +118,7 @@ export default function D3CanvasWrapper(props){
           Uniformly Distribute Data
       </button>
       <button
-        onClick={testZoom}
+        onClick={(e)=>changeZoom(e, null)}
         style={{
           position: 'absolute',
           bottom: 30,
@@ -124,7 +126,7 @@ export default function D3CanvasWrapper(props){
           height: '40px',
           width: '60px'
         }}>
-          Zoom Cluster
+          Reset Zoom
       </button>
     </div>
 
