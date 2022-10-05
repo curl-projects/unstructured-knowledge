@@ -16,10 +16,12 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       const pointTransform = event.transform;
 
       d3.select("#dotlayer").attr("transform", pointTransform)
-      d3.selectAll(".clusterNode").attr("transform", pointTransform)
+      d3.select("#regionlayer").attr("transform", pointTransform)
+      d3.select("#clusterlayer").attr("transform", pointTransform)
       d3.select("#annotationlayer").attr("transform", pointTransform)
       d3.select("#brushlayer").attr("transform", pointTransform)
       d3.select("#labellayer").attr("transform", pointTransform)
+
     }
 
     const zoom = d3.zoom()
@@ -197,7 +199,67 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       const brushLayer = svg.append("g")
                             .attr("id", "brushlayer")
 
-      // CIRCLE CREATION AND CANVAS ANIMATIONS
+      const brush = d3.brush()
+                      .on("start brush end", brushed)
+                      .on("end", function({selection}){
+                        filterBrushedStreamData({selection})
+                        if(!selection){
+                          resetBrushFilter()
+                        }
+                      })
+      brushLayer.call(brush);
+
+      const regionLayer = svg.append("g")
+                             .attr('id', 'regionlayer')
+      const clusterLayer = svg.append("g")
+                              .attr("id", "clusterlayer")
+
+      const dots = svg.insert("g").attr('id', 'dotlayer')
+        .selectAll("dot")
+        .data(data)
+        .join('circle')
+          .attr('id', d => `fr-${d.fr_id}`)
+          .attr('class', 'frNode')
+          .attr('cx', d => x(d.xDim))
+          .attr('cy', d => y(d.yDim))
+          .attr('r', 5)
+          .attr('fill', "#69b3a2")
+              .on("mouseover", function(d){
+                  generateAnnotation(d, event)
+                })
+              .on("mouseout", function(d){
+                tearDownAnnotation(d)
+              })
+
+      const annotationLayer = svg.append("g")
+                                 .attr('id', 'annotationlayer')
+
+
+      const labellayer = svg.append("g")
+                            .attr('id', 'labellayer')
+
+      function brushed({selection}){
+        let value = [];
+        if (selection){
+          const [[x0, y0], [x1, y1]] = selection;
+          dots.style("fill", "#69b3a2")
+              .filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
+              .style("fill", "red")
+              .data();
+
+        } else {
+          dots.style("#69b3a2")
+        }
+      }
+
+      function filterBrushedStreamData({selection}){
+        if(selection){
+          const [[x0, y0], [x1, y1]] = selection;
+          const dataPoints = dots.filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
+          filterBrushedData(dataPoints.data())
+        }
+      }
+
       function generateAnnotation(d, event){
         const [x,y] = d3.pointer(event);
         const fr_id = d.target.__data__.fr_id
@@ -227,65 +289,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         svg.select(`#annotation-${fr_id}`).remove()
       }
 
-      const brush = d3.brush()
-                      .on("start brush end", brushed)
-                      .on("end", function({selection}){
-                        filterBrushedStreamData({selection})
-                        if(!selection){
-                          resetBrushFilter()
-                        }
-                      })
-      brushLayer.call(brush);
-
-      const clusterLayer = svg.append("g")
-                              .attr("id", "clusterlayer")
-
-      const dots = svg.insert("g").attr('id', 'dotlayer')
-        .selectAll("dot")
-        .data(data)
-        .join('circle')
-          .attr('id', d => `fr-${d.fr_id}`)
-          .attr('class', 'frNode')
-          .attr('cx', d => x(d.xDim))
-          .attr('cy', d => y(d.yDim))
-          .attr('r', 5)
-          .attr('fill', "#69b3a2")
-              .on("mouseover", function(d){
-                  generateAnnotation(d, event)
-                })
-              .on("mouseout", function(d){
-                tearDownAnnotation(d)
-              })
-
-      const annotationLayer = svg.append("g")
-                                 .attr('id', 'annotationlayer')
-      // // REGION SELECTION
-
-
-      const labellayer = svg.append("g")
-                            .attr('id', 'labellayer')
-
-      function brushed({selection}){
-        let value = [];
-        if (selection){
-          const [[x0, y0], [x1, y1]] = selection;
-          dots.style("fill", "#69b3a2")
-              .filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
-              .style("fill", "red")
-              .data();
-
-        } else {
-          dots.style("#69b3a2")
-        }
-      }
-
-      function filterBrushedStreamData({selection}){
-        if(selection){
-          const [[x0, y0], [x1, y1]] = selection;
-          const dataPoints = dots.filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
-          filterBrushedData(dataPoints.data())
-        }
-      }
 
     },
     [data.length]
