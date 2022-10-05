@@ -101,11 +101,17 @@ body{
 
 /* CANVAS D3 CLASSES */
 .featureRequestCircle{
-  transition: 1s linear all;
+  transition: 1s ease-out all;
 }
 
 .searchSelected{
-  transition: 1s linear all;
-  fill: black !important;
+  transition: 0.5s ease-in fill;
+  transition: 0.2s ease-in r;
   r: 10;
+  fill: black !important;
+}
+
+.mouseOverFr{
+  transition: 0.2s ease-in all;
+  r: 20 !important;
 }

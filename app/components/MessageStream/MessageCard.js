@@ -7,14 +7,17 @@ export default function MessageCard(props){
 
   function handleMouseOver(event, fr_id){
     d3.select(`#fr-${fr_id}`)
+    .classed("mouseOverFr", true)
     .transition()
     .duration(200)
     .ease(d3.easeCubicInOut)
-    .attr("r", 20)
     .attr('stroke', 'red')
+    .attr("r", 20)
+
   }
   function handleMouseOut(event, fr_id){
     d3.select(`#fr-${fr_id}`)
+      .classed("mouseOverFr", false)
       .transition()
       .duration(200)
       .ease(d3.easeCubicInOut)
