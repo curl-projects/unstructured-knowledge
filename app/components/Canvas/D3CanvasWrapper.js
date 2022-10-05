@@ -71,6 +71,7 @@ export default function D3CanvasWrapper(props){
     return clusterUnits
   }
   function clusterData(e){
+    setZoomObject(null)
     // generate uniformly distributed cluster coordinates
     const clusterCoordsArray = generateClusterCoords(props.data, 'kmeans_labels')
     const clusterUnitsArray = generateClusterUnitCoords(props.data, 'kmeans_labels', clusterCoordsArray)

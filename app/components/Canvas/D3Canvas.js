@@ -17,9 +17,8 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
       d3.select("#dotlayer").attr("transform", pointTransform)
       d3.selectAll(".clusterNode").attr("transform", pointTransform)
-      // d3.selectAll('.annotations').attr("transform", pointTransform)
-      // d3.select('#xAxis').attr('transform', pointTransform);
-      // d3.select('#yAxis').attr('transform', pointTransform);
+      d3.select("#annotationlayer").attr("transform", pointTransform)
+      d3.select("#brushlayer").attr("transform", pointTransform)
     }
 
     const zoom = d3.zoom()
@@ -42,23 +41,17 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         const [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
         let margin = 10
         const k = 0.1*Math.min(ref.current.clientWidth / (x1+2*margin - x0), ref.current.clientHeight / (y1+2*margin - y0));
-        console.log("K", k)
         const tx = (ref.current.clientWidth - k * (x0 + x1)) / 2;
         const ty = (ref.current.clientHeight - k * (y0 + y1)) / 2;
         return [data[0]['kmeans_labels'], d3.zoomIdentity.translate(tx, ty).scale(k)];
       }))
 
-      console.log("TRANSFORMS", transforms)
-
-
       const transform = transforms.find((el) => el[0] === zoomObject)
-
-      console.log("TRANSFORM", transform)
 
       d3.select('svg').transition().duration(1000).call(zoom.transform, transform[1]);
     }
     else{
-      console.log("EXECUTING REDIRECT!")
+      console.log("ZOOM executed")
       d3.select('svg').transition().duration(1000).call(zoom.transform, d3.zoomIdentity.scale(1));
 
     }
@@ -111,7 +104,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
   // ADD AND TEAR DOWN CLUSTER BLOBS
   useEffect(()=>{
-
     // X-AXIS
     var x = d3.scaleLinear()
     .domain(xDomain)
@@ -171,6 +163,9 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
         .call(d3.axisLeft(y));
 
+      const brushLayer = svg.append("g")
+                            .attr("id", "brushlayer")
+
       // CIRCLE CREATION AND CANVAS ANIMATIONS
       function generateAnnotation(d, event){
         const [x,y] = d3.pointer(event);
@@ -184,7 +179,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
           <p>${message}</p>
         `
         )
-        d3.select("svg").append("foreignObject")
+        d3.select("#annotationlayer").append("foreignObject")
         .attr("width", 200)
         .attr('id', `annotation-${fr_id}`)
         .attr('class', "annotations")
@@ -209,7 +204,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
                           resetBrushFilter()
                         }
                       })
-      svg.call(brush);
+      brushLayer.call(brush);
 
       const clusterLayer = svg.append("g")
                               .attr("id", "clusterlayer")
@@ -231,6 +226,8 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
                 tearDownAnnotation(d)
               })
 
+      const annotationLayer = svg.append("g")
+                                 .attr('id', 'annotationlayer')
       // // REGION SELECTION
 
       function brushed({selection}){
