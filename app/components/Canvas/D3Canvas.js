@@ -19,6 +19,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       d3.selectAll(".clusterNode").attr("transform", pointTransform)
       d3.select("#annotationlayer").attr("transform", pointTransform)
       d3.select("#brushlayer").attr("transform", pointTransform)
+      d3.select("#labellayer").attr("transform", pointTransform)
     }
 
     const zoom = d3.zoom()
@@ -73,13 +74,24 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     }
   }, [searchResults])
 
-  // MOVEMENT ANIMATION FOR FRs
+  // MOVEMENT ANIMATION FOR FRs (AND TEAR DOWN CLUSTERS)
   useEffect(()=>{
     d3.select(ref.current)
       .selectAll(".clusterNode")
-      .transition(1000)
+      .transition()
+      .duration(500)
       .attr('r', 0)
       .remove()
+
+    d3.select(ref.current)
+      .selectAll(".labelNodeText")
+      .transition()
+      .duration(500)
+      .style('font-size', "0px")
+      .on("end", function(){
+        d3.select(ref.current).selectAll(".labelNode").remove()
+      })
+
 
     // X-AXIS
     var x = d3.scaleLinear()
@@ -102,7 +114,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
            .attr('cy', d => y(d.yDim))
   }, [data])
 
-  // ADD AND TEAR DOWN CLUSTER BLOBS
+  // ADD CLUSTER BLOBS AND LABELS
   useEffect(()=>{
     // X-AXIS
     var x = d3.scaleLinear()
@@ -119,9 +131,9 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       .selectAll('dot')
         .data(clusters)
         .join('circle')
+          .attr('class', "clusterNode")
           .attr("r", 0)
           .style('opacity', 0)
-          .attr('class', "clusterNode")
           .attr('cx', d => x(d.xDim))
           .attr('cy', d => y(d.yDim))
           .attr('fill', "blue")
@@ -132,6 +144,33 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
             .delay(500)
             .attr("r", 35)
             .style('opacity', 0.2)
+
+    // // LABELS
+    d3.select('#labellayer')
+      .selectAll("text")
+      .data(clusters)
+      .join("g")
+        .attr("class", "labelNode")
+        .append("text")
+        .attr('class', 'labelNodeText')
+        .attr('dx', d => x(d.xDim))
+        .attr('dy', d => y(d.yDim))
+        .text("Hello")
+        .attr('fill', 'black')
+        .attr("text-anchor", 'middle')
+        .attr("dominant-baseline", 'middle')
+        .style('font', '0px sans-serif')
+        .transition()
+        .delay(500)
+        .duration(500)
+        .style('font-size', '20px');
+
+        // .attr('text-anchor', 'middle')
+      // .attr({
+      //   "fill": 'black',
+      //   'alignment-baseline': 'before-edge',
+      //   'text-anchor': 'middle',
+      // })
 
   }, [clusters])
 
@@ -229,6 +268,10 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       const annotationLayer = svg.append("g")
                                  .attr('id', 'annotationlayer')
       // // REGION SELECTION
+
+
+      const labellayer = svg.append("g")
+                            .attr('id', 'labellayer')
 
       function brushed({selection}){
         let value = [];
