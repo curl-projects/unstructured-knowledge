@@ -145,7 +145,8 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
             .attr("r", 35)
             .style('opacity', 0.2)
 
-    // // LABELS
+    console.log('CLUSTERS', clusters)
+// LABELS
     d3.select('#labellayer')
       .selectAll("text")
       .data(clusters)
@@ -155,7 +156,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         .attr('class', 'labelNodeText')
         .attr('dx', d => x(d.xDim))
         .attr('dy', d => y(d.yDim))
-        .text("Hello")
+        .text(d => `${d.id}`)
         .attr('fill', 'black')
         .attr("text-anchor", 'middle')
         .attr("dominant-baseline", 'middle')
