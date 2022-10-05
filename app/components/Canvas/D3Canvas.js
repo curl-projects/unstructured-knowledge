@@ -4,12 +4,90 @@ import * as d3 from 'd3';
 
 
 
-export default function D3Canvas({ data, clusters, searchResults, filterBrushedData, resetBrushFilter}) {
+export default function D3Canvas({ data, clusters, searchResults, filterBrushedData, resetBrushFilter, zoomCluster}) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
+  // ZOOM ANIMATIONS
   useEffect(()=>{
-    console.log("EXECUTED!")
+    console.log("EXECUTED")
+    if(zoomCluster && clusters.length !== 0){
+      console.log('CLUSTERS USE EFFECT', clusters)
+      console.log("CANVAS DATA", data)
+
+      var x = d3.scaleLinear()
+      .domain(xDomain)
+      .range([0, ref.current.clientWidth]);
+
+      // Y-AXIS
+      var y = d3.scaleLinear()
+        .domain(yDomain)
+        .range([ref.current.clientHeight, 0]);
+
+      const transforms = [[]].concat(d3.groups(data, d => d['kmeans_labels']).map(([key, data])=> {
+        const [x0, x1] = d3.extent(data, d => d["xDim"]).map(x);
+        const [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
+        const k = 0.1* Math.min(ref.current.clientWidth / (x1 - x0), ref.current.clientHeight / (y1 - y0));
+        const tx = (ref.current.clientWidth - k * (x0 + x1)) / 2;
+        const ty = (ref.current.clientHeight - k * (y0 + y1)) / 2;
+        return [`Cluster ${key}`, d3.zoomIdentity.translate(tx, ty).scale(k)];
+      }))
+
+      // WRITTEN TO BE GENERALISABLE TO MORE THAN ONE OBJECT DEFINING THE CLUSTER
+      // const clusterTransforms = [[]].concat(d3.groups(clusters, d => d['id']).map(([key, data])=> {
+      //   console.log("DATA", data, key)
+      //   let [x0, x1] = d3.extent(data, d => d["xDim"]).map(x);
+      //   x0 -= 35
+      //   x1 += 35
+      //   console.log('X0 x1', x0, x1)
+      //   let [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
+      //   y0 += 35
+      //   y1 -= 35
+      //   const k = 0.1* Math.min(ref.current.clientWidth / (x1 - x0), ref.current.clientHeight / (y1 - y0));
+      //   console.log("ref",)
+      //   const tx = (ref.current.clientWidth - k * (x0 + x1)) / 2;
+      //   const ty = (ref.current.clientHeight - k * (y0 + y1)) / 2;
+      //   return [`Cluster ${key}`, d3.zoomIdentity.translate(tx, ty).scale(k)];
+      // }))
+
+      // console.log('CLUSTER TRANSFORMS', clusterTransforms)
+
+
+      function zoomed(event){
+        const pointTransform = event.transform;
+
+        const newX = pointTransform.rescaleX(x);
+        const newY = pointTransform.rescaleY(y);
+
+        console.log("NEW VALS", newX, newY)
+        d3.select("#dotlayer").attr("transform", pointTransform)
+        d3.selectAll(".clusterNode").attr("transform", pointTransform)
+        d3.select('#xAxis').call(d3.axisBottom(newX));
+        d3.select('#yAxis').call(d3.axisLeft(newY));
+      }
+
+      console.log("TRANSFORMS", transforms)
+
+      console.log("ZOOMCLUSTER", zoomCluster)
+
+      const transform = transforms[10][1]
+      // const clusterTransform = clusterTransforms[10][1]
+
+      // const clusterTransform = transforms[10][1]
+
+      const zoom = d3.zoom()
+      .extent([[0, 0], [ref.current.clientWidth, ref.current.clientHeight]])
+      .translateExtent([[0, 0], [ref.current.clientWidth, ref.current.clientHeight]])
+      .on("zoom", zoomed);
+
+      d3.select('g').call(zoom.transform, transform);
+    }
+  }, [zoomCluster])
+
+
+
+  // SEARCH ANIMATIONS
+  useEffect(()=>{
     if(searchResults && searchResults.length !== 0){
       const stringSearchResults = searchResults.map(a => `#fr-${a}`)
       const activePoints = d3.select(ref.current)
@@ -23,7 +101,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     }
   }, [searchResults])
 
-  // CLUSTERING ANIMATION
+  // CLUSTERING ANIMATION FOR FRs
   useEffect(()=>{
     d3.select(ref.current)
       .selectAll(".clusterNode")
@@ -54,7 +132,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
            .attr('cy', d => y(d.yDim))
   }, [data])
 
-  // ADD AND TEAR DOWN CLUSTERS
+  // ADD AND TEAR DOWN CLUSTER BLOBS
   useEffect(()=>{
     // X-AXIS
     var x = d3.scaleLinear()
@@ -67,8 +145,8 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       .domain(yDomain)
       .range([ref.current.clientHeight, 0]);
 
-    d3.select('svg')
-      .append("g")
+    const clusterNodes = d3.select('svg')
+      .append("g").attr("id", "clusterlayer")
       .selectAll('dot')
         .data(clusters)
         .join('circle')
@@ -100,14 +178,18 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       var x = d3.scaleLinear()
       .domain(xDomain)
       .range([0, ref.current.clientWidth]);
-      svg.append("g")
+
+      const xAxis = svg.append("g")
+        .attr('id', "xAxis")
         .call(d3.axisBottom(x));
 
       // Y-AXIS
       var y = d3.scaleLinear()
         .domain(yDomain)
         .range([ref.current.clientHeight, 0]);
-      svg.append("g")
+
+      const yAxis = svg.append("g")
+        .attr('id', "yAxis")
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
         .call(d3.axisLeft(y));
 
@@ -170,6 +252,31 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
                 tearDownAnnotation(d)
               })
 
+            // const zoom = d3.zoom()
+            //    .on("zoom", zoomed);
+            //
+            //  const transforms = [[]].concat(d3.groups(data, d => d['kmeans_labels']).map(([key, data])=> {
+            //    const [x0, x1] = d3.extent(data, d => d["xDim"]).map(x);
+            //    const [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
+            //    const k = 0.9 * Math.min(width / (x1 - x0), height / (y1 - y0));
+            //    const tx = (width - k * (x0 + x1)) / 2;
+            //    const ty = (height - k * (y0 + y1)) / 2;
+            //    return [`Cluster ${key}`, d3.zoomIdentity.translate(tx, ty).scale(k)];
+            //  }))
+            //
+            //  function zoomed(event){
+            //    console.log("EVENT!", event)
+            //    const {transform} = event;
+            //    dots.attr("transform", transform).attr("stroke-width", 5 / transform.k);
+            //    xAxis.call(transform.rescaleX(x));
+            //    yAxis.call(transform.rescaleY(y));
+            //  }
+            //
+            //  const transform = transforms[10][1]
+            //
+            //  d3.select('svg').call(zoom.transform, transform);
+            //
+
 
       // // REGION SELECTION
 
@@ -210,67 +317,3 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     </>
   );
 }
-
-
-// const ref = useD3(
-//   (svg) => {
-//     const height = 500;
-//     const width = 500;
-//     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-//
-//     const x = d3
-//       .scaleBand()
-//       .domain(data.map((d) => d.year))
-//       .rangeRound([margin.left, width - margin.right])
-//       .padding(0.1);
-//
-//     const y1 = d3
-//       .scaleLinear()
-//       .domain([0, d3.max(data, (d) => d.sales)])
-//       .rangeRound([height - margin.bottom, margin.top]);
-//
-//     const xAxis = (g) =>
-//       g.attr("transform", `translate(0,${height - margin.bottom})`).call(
-//         d3
-//           .axisBottom(x)
-//           .tickValues(
-//             d3
-//               .ticks(...d3.extent(x.domain()), width / 40)
-//               .filter((v) => x(v) !== undefined)
-//           )
-//           .tickSizeOuter(0)
-//       );
-//
-//     const y1Axis = (g) =>
-//       g
-//         .attr("transform", `translate(${margin.left},0)`)
-//         .style("color", "steelblue")
-//         .call(d3.axisLeft(y1).ticks(null, "s"))
-//         .call((g) => g.select(".domain").remove())
-//         .call((g) =>
-//           g
-//             .append("text")
-//             .attr("x", -margin.left)
-//             .attr("y", 10)
-//             .attr("fill", "currentColor")
-//             .attr("text-anchor", "start")
-//             .text(data.y1)
-//         );
-//
-//     svg.select(".x-axis").call(xAxis);
-//     svg.select(".y-axis").call(y1Axis);
-//
-//     svg
-//       .select(".plot-area")
-//       .attr("fill", "steelblue")
-//       .selectAll(".bar")
-//       .data(data)
-//       .join("rect")
-//       .attr("class", "bar")
-//       .attr("x", (d) => x(d.year))
-//       .attr("width", x.bandwidth())
-//       .attr("y", (d) => y1(d.sales))
-//       .attr("height", (d) => y1(0) - y1(d.sales));
-//   },
-//   [data.length]
-// );

@@ -39,9 +39,10 @@ export default function Index() {
   const [topLevelCanvasDataObj, setTopLevelCanvasDataObj] = useState(data)
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
 
+
   useEffect(()=>{
     console.log("INDEX DATA", data)
-  }, [data])
+      }, [data])
 
   useEffect(()=>{
     console.log("ACTION DATA:", actionData)
