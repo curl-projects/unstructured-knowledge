@@ -11,16 +11,15 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
   // ZOOM ANIMATIONS
   useEffect(()=>{
+    console.log("ZOOMOBJ", zoomObject)
     function zoomed(event){
       const pointTransform = event.transform;
 
-      // const newX = pointTransform.rescaleX(x);
-      // const newY = pointTransform.rescaleY(y);
-
       d3.select("#dotlayer").attr("transform", pointTransform)
       d3.selectAll(".clusterNode").attr("transform", pointTransform)
-      // d3.select('#xAxis').call(d3.axisBottom(newX));
-      // d3.select('#yAxis').call(d3.axisLeft(newY));
+      // d3.selectAll('.annotations').attr("transform", pointTransform)
+      // d3.select('#xAxis').attr('transform', pointTransform);
+      // d3.select('#yAxis').attr('transform', pointTransform);
     }
 
     const zoom = d3.zoom()
@@ -29,9 +28,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     .on("zoom", zoomed);
 
     if(zoomObject && clusters.length !== 0){
-      console.log('CLUSTERS USE EFFECT', clusters)
-      console.log("CANVAS DATA", data)
-
       var x = d3.scaleLinear()
       .domain(xDomain)
       .range([0, ref.current.clientWidth]);
@@ -42,23 +38,22 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         .range([ref.current.clientHeight, 0]);
 
       const transforms = [[]].concat(d3.groups(data, d => d['kmeans_labels']).map(([key, data])=> {
-        console.log("DATA", data)
         const [x0, x1] = d3.extent(data, d => d["xDim"]).map(x);
         const [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
-        const k = 0.1* Math.min(ref.current.clientWidth / (x1 - x0), ref.current.clientHeight / (y1 - y0));
+        let margin = 10
+        const k = 0.1*Math.min(ref.current.clientWidth / (x1+2*margin - x0), ref.current.clientHeight / (y1+2*margin - y0));
+        console.log("K", k)
         const tx = (ref.current.clientWidth - k * (x0 + x1)) / 2;
         const ty = (ref.current.clientHeight - k * (y0 + y1)) / 2;
         return [data[0]['kmeans_labels'], d3.zoomIdentity.translate(tx, ty).scale(k)];
       }))
 
+      console.log("TRANSFORMS", transforms)
 
-
-      console.log("ZOOMCLUSTER", zoomObject)
 
       const transform = transforms.find((el) => el[0] === zoomObject)
 
       console.log("TRANSFORM", transform)
-
 
       d3.select('svg').transition().duration(1000).call(zoom.transform, transform[1]);
     }
@@ -68,7 +63,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
     }
   }, [zoomObject])
-
 
 
   // SEARCH ANIMATIONS
@@ -86,28 +80,26 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     }
   }, [searchResults])
 
-  // CLUSTERING ANIMATION FOR FRs
+  // MOVEMENT ANIMATION FOR FRs
   useEffect(()=>{
     d3.select(ref.current)
       .selectAll(".clusterNode")
       .transition(1000)
-        .attr("r", 0)
-        .style("opacity", 0)
+      .attr('r', 0)
+      .remove()
 
     // X-AXIS
     var x = d3.scaleLinear()
     .domain(xDomain)
     .range([0, ref.current.clientWidth]);
 
-
     // Y-AXIS
     var y = d3.scaleLinear()
       .domain(yDomain)
       .range([ref.current.clientHeight, 0]);
 
-
-      d3.select(ref.current)
-        .selectAll('circle')
+      console.log("EXECUTING!")
+      d3.selectAll(".frNode")
         .data(data)
         .transition()
            .duration(1000)
@@ -119,6 +111,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
   // ADD AND TEAR DOWN CLUSTER BLOBS
   useEffect(()=>{
+
     // X-AXIS
     var x = d3.scaleLinear()
     .domain(xDomain)
@@ -130,8 +123,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       .domain(yDomain)
       .range([ref.current.clientHeight, 0]);
 
-    const clusterNodes = d3.select('svg')
-      .append("g").attr("id", "clusterlayer")
+    const clusterNodes = d3.select('#clusterlayer')
       .selectAll('dot')
         .data(clusters)
         .join('circle')
@@ -164,9 +156,8 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
       // X-AXIS
       var x = d3.scaleLinear()
-      .domain(xDomain)
-      .range([0, ref.current.clientWidth]);
-
+        .domain(xDomain)
+        .range([0, ref.current.clientWidth]);
       const xAxis = svg.append("g")
         .attr('id', "xAxis")
         .call(d3.axisBottom(x));
@@ -175,7 +166,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
       var y = d3.scaleLinear()
         .domain(yDomain)
         .range([ref.current.clientHeight, 0]);
-
       const yAxis = svg.append("g")
         .attr('id', "yAxis")
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
@@ -197,6 +187,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         d3.select("svg").append("foreignObject")
         .attr("width", 200)
         .attr('id', `annotation-${fr_id}`)
+        .attr('class', "annotations")
         .attr("height", 200)
         .attr("x", x)
         .attr("y", y)
@@ -220,11 +211,15 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
                       })
       svg.call(brush);
 
+      const clusterLayer = svg.append("g")
+                              .attr("id", "clusterlayer")
+
       const dots = svg.insert("g").attr('id', 'dotlayer')
         .selectAll("dot")
         .data(data)
         .join('circle')
           .attr('id', d => `fr-${d.fr_id}`)
+          .attr('class', 'frNode')
           .attr('cx', d => x(d.xDim))
           .attr('cy', d => y(d.yDim))
           .attr('r', 5)
@@ -235,32 +230,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
               .on("mouseout", function(d){
                 tearDownAnnotation(d)
               })
-
-            // const zoom = d3.zoom()
-            //    .on("zoom", zoomed);
-            //
-            //  const transforms = [[]].concat(d3.groups(data, d => d['kmeans_labels']).map(([key, data])=> {
-            //    const [x0, x1] = d3.extent(data, d => d["xDim"]).map(x);
-            //    const [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
-            //    const k = 0.9 * Math.min(width / (x1 - x0), height / (y1 - y0));
-            //    const tx = (width - k * (x0 + x1)) / 2;
-            //    const ty = (height - k * (y0 + y1)) / 2;
-            //    return [`Cluster ${key}`, d3.zoomIdentity.translate(tx, ty).scale(k)];
-            //  }))
-            //
-            //  function zoomed(event){
-            //    console.log("EVENT!", event)
-            //    const {transform} = event;
-            //    dots.attr("transform", transform).attr("stroke-width", 5 / transform.k);
-            //    xAxis.call(transform.rescaleX(x));
-            //    yAxis.call(transform.rescaleY(y));
-            //  }
-            //
-            //  const transform = transforms[10][1]
-            //
-            //  d3.select('svg').call(zoom.transform, transform);
-            //
-
 
       // // REGION SELECTION
 
