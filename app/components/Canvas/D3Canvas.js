@@ -60,41 +60,35 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
   }, [data])
 
   // ADD AND TEAR DOWN CLUSTERS
-  // useEffect(()=>{
-  //   // X-AXIS
-  //   var x = d3.scaleLinear()
-  //   .domain(xDomain)
-  //   .range([0, ref.current.clientWidth]);
-  //
-  //
-  //   // Y-AXIS
-  //   var y = d3.scaleLinear()
-  //     .domain(yDomain)
-  //     .range([ref.current.clientHeight, 0]);
-  //
-  //   // console.log("CLUSTERS!", clusters)
-  //   // d3.select(ref.current)
-  //   //   .selectAll(".clusterNode")
-  //   //   .remove()
-  //
-  //   d3.select('svg')
-  //     .insert("g", "#dotlayer")
-  //     .selectAll('dot')
-  //       .data(clusters)
-  //       .join('circle')
-  //         .attr("r", 0)
-  //         .style('opacity', 0)
-  //         .attr('class', "clusterNode")
-  //         .attr('cx', d => x(d.xDim))
-  //         .attr('cy', d => y(d.yDim))
-  //         .attr('fill', "blue")
-  //         .transition(1000)
-  //           .delay(500)
-  //           .attr("r", 35)
-  //           .style('opacity', 0.2)
-  //
-  //
-  // }, [clusters])
+  useEffect(()=>{
+    // X-AXIS
+    var x = d3.scaleLinear()
+    .domain(xDomain)
+    .range([0, ref.current.clientWidth]);
+
+
+    // Y-AXIS
+    var y = d3.scaleLinear()
+      .domain(yDomain)
+      .range([ref.current.clientHeight, 0]);
+
+    d3.select('svg')
+      .append("g")
+      .selectAll('dot')
+        .data(clusters)
+        .join('circle')
+          .attr("r", 0)
+          .style('opacity', 0)
+          .attr('class', "clusterNode")
+          .attr('cx', d => x(d.xDim))
+          .attr('cy', d => y(d.yDim))
+          .attr('fill', "blue")
+          .transition(1000)
+            .delay(500)
+            .attr("r", 35)
+            .style('opacity', 0.2)
+
+  }, [clusters])
 
   const ref = useD3(
     (svg) => {
@@ -161,7 +155,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
                       })
       svg.call(brush);
 
-      const dots = svg.append("g").attr('id', 'dotlayer')
+      const dots = svg.insert("g").attr('id', 'dotlayer')
         .selectAll("dot")
         .data(data)
         .join('circle')
