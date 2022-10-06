@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 
 
 export default function D3Canvas({ data, clusters, searchResults, filterBrushedData,
-                                   resetBrushFilter, zoomObject, setZoomObject}) {
+                                   resetBrushFilter, zoomObject, setZoomObject, regions}) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
@@ -60,7 +60,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     }
   }, [zoomObject])
 
-
   // SEARCH ANIMATIONS
   useEffect(()=>{
     if(searchResults && searchResults.length !== 0){
@@ -76,7 +75,7 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     }
   }, [searchResults])
 
-  // MOVEMENT ANIMATION FOR FRs (AND TEAR DOWN CLUSTERS)
+  // MOVEMENT ANIMATION FOR FRs (AND CLUSTER TEARDOWN)
   useEffect(()=>{
     d3.select(ref.current)
       .selectAll(".clusterNode")
@@ -115,6 +114,37 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
            .attr('cx', d => x(d.xDim))
            .attr('cy', d => y(d.yDim))
   }, [data])
+
+  // ADD REGIONS
+  useEffect(()=>{
+    var x = d3.scaleLinear()
+    .domain(xDomain)
+    .range([0, ref.current.clientWidth]);
+
+    // Y-AXIS
+    var y = d3.scaleLinear()
+      .domain(yDomain)
+      .range([ref.current.clientHeight, 0]);
+
+    console.log("REGIONS!", regions)
+    const regionNodes = d3.select("#regionlayer")
+      .selectAll('rect')
+      .data(regions)
+      .join('rect')
+        .attr('class', 'regionNode')
+        .attr('width', d => d.width)
+        .attr('height', d=> d.height)
+        .attr('x', d => x(d.xDim))
+        .attr('y', d => y(d.yDim))
+        .attr('rx', 20)
+        .attr('fill', "pink")
+        .attr('opacity', 0)
+        .transition()
+        .duration(500)
+        .attr('opacity', 0.75)
+
+
+  }, [regions])
 
   // ADD CLUSTER BLOBS AND LABELS
   useEffect(()=>{

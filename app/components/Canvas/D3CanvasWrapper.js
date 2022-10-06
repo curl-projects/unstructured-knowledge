@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import D3Canvas from "~/components/Canvas/D3Canvas.js"
 import { useEffect, useState } from 'react';
 import _ from "underscore";
@@ -9,6 +10,7 @@ export default function D3CanvasWrapper(props){
 
   const [dataObj, setDataObj] = useState(generateUniformCoords(props.data))
   const [clusters, setClusters] = useState([])
+  const [regions, setRegions] = useState([])
 
   // UNIFORM POINTS
   function generateUniformCoords(data){
@@ -78,6 +80,72 @@ export default function D3CanvasWrapper(props){
     setClusters(clusterCoordsArray)
     }
 
+  function generateRegionCoords(data, labelName){
+
+    const svg = d3.select('svg')
+
+    const svgDims = {
+      height: parseFloat(svg.style('height')),
+      width: parseFloat(svg.style('width'))
+    }
+
+    const labels = data.map(a => a[labelName])
+    const regionLabels = Array.from(new Set(labels))
+    const regionCoordsArray = []
+
+
+    const nRows = Math.ceil(regionLabels.length/2)
+    var regionHeight = 200
+    var regionWidth = 0
+    var gap = 20
+
+    if(regionLabels.length === 1){
+
+      regionWidth = svgDims.width / 2
+      regionHeight = svgDims.height / 2
+    }
+
+    else if(regionLabels.length === 2){
+      gap = 40
+      regionHeight = svgDims.height / 2
+      regionWidth = svgDims.width - 2*gap
+    }
+
+    else if(nRows === 2){
+      console.log("EXECUTE")
+      gap = 80
+      regionWidth = (svgDims.width - 3*gap)/2
+      regionHeight = (svgDims.height -3*gap)/2
+    }
+    else if(nRows > 2){
+      regionHeight = (3*svgDims.height - (nRows+1)*svgDims.width)/(nRows-2)
+      regionWidth = regionHeight
+      gap = (1/3)*(svgDims.width - 2*regionHeight)
+    }
+
+
+    console.log("regionHeight + gap", regionHeight, regionWidth, gap)
+    for(let i in regionLabels){
+      let rowMultiplier = Math.floor((parseInt(i))/nRows) + 1
+      let colMultiplier = ((parseInt(i)) % nRows) + 1
+      console.log("MULTIPLIERS", rowMultiplier, colMultiplier)
+      console.log("REGION", gap, regionWidth, regionHeight)
+      console.log("SVG DIMS", svgDims.height, svgDims.width)
+      let obj = {}
+      obj["id"] = regionLabels[i]
+
+      obj['xDim'] = (((gap + regionWidth) * rowMultiplier)-regionWidth)/svgDims.width
+      obj['yDim'] = (((gap + regionHeight) * colMultiplier))/svgDims.height
+      obj['width'] = regionWidth
+      obj['height'] = regionHeight
+      console.log("X_DIM", (((gap + regionWidth) * rowMultiplier)-regionWidth)/svgDims.width)
+      console.log("Y_DIM", (((gap + regionHeight) * colMultiplier))/svgDims.height)
+      regionCoordsArray.push(obj)
+    }
+    return regionCoordsArray
+
+  }
+
   function changeZoom(e, changeParam){
     if(!changeParam){
       props.resetZoomedData()
@@ -87,11 +155,18 @@ export default function D3CanvasWrapper(props){
     }
   }
 
+  function generateRegions(){
+    const regionCoordsArray = generateRegionCoords(props.data, 'region')
+    console.log("REGIONCOORDSARRAY", regionCoordsArray)
+    setRegions(regionCoordsArray)
+  }
+
   return(
     <div className="canvasWrapper">
     <D3Canvas
       data={dataObj}
       clusters={clusters}
+      regions={regions}
       searchResults={props.searchResults}
       zoomObject={props.zoomObject}
       setZoomObject={props.setZoomObject}
@@ -131,6 +206,17 @@ export default function D3CanvasWrapper(props){
           width: '60px'
         }}>
           Reset Zoom
+      </button>
+      <button
+        onClick={generateRegions}
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 420,
+          height: '40px',
+          width: '60px'
+        }}>
+          Generate Regions
       </button>
     </div>
 
