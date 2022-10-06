@@ -23,6 +23,7 @@ export default function D3CanvasWrapper(props){
       obj['kmeans_labels'] = data[idx]["kmeans_labels"]
       obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
       obj['yDim'] = (Math.random() * (yMax-yMin)) + yMin
+      obj['region'] = data[idx]["region"]
 
       coordsArray.push(obj)
     }
@@ -84,9 +85,10 @@ export default function D3CanvasWrapper(props){
 
     const svg = d3.select('svg')
 
+    const viewBox = svg.attr("viewBox").split(",")
     const svgDims = {
-      height: parseFloat(svg.style('height')),
-      width: parseFloat(svg.style('width'))
+      height: parseFloat(viewBox[3]),
+      width: parseFloat(viewBox[2]),
     }
 
     const labels = data.map(a => a[labelName])
@@ -103,47 +105,100 @@ export default function D3CanvasWrapper(props){
 
       regionWidth = svgDims.width / 2
       regionHeight = svgDims.height / 2
+
+      for(let i in regionLabels){
+        let obj = {}
+        obj["id"] = regionLabels[i]
+        obj['xDim'] = (0.5*svgDims.width-0.5*regionWidth)/svgDims.width
+        obj['yDim'] = (0.5*svgDims.height+0.5*regionHeight)/svgDims.height
+        obj['width'] = regionWidth
+        obj['height'] = regionHeight
+        regionCoordsArray.push(obj)
+      }
     }
 
     else if(regionLabels.length === 2){
       gap = 40
-      regionHeight = svgDims.height / 2
-      regionWidth = svgDims.width - 2*gap
+
+      regionHeight = (svgDims.height-3*gap) / 2
+      regionWidth = svgDims.width - 2.5*gap
+
+      console.log("HELLO!", regionHeight)
+      for(let i in regionLabels){
+        let obj = {}
+        obj["id"] = regionLabels[i]
+        obj['xDim'] = gap/svgDims.width
+        obj['yDim'] = ((gap + regionHeight) * (parseInt(i)+1))/svgDims.height
+        obj['width'] = regionWidth
+        obj['height'] = regionHeight
+        regionCoordsArray.push(obj)
+      }
     }
 
-    else if(nRows === 2){
-      console.log("EXECUTE")
-      gap = 80
+    else if(nRows >= 2){
+      gap=80/(nRows-1)
       regionWidth = (svgDims.width - 3*gap)/2
-      regionHeight = (svgDims.height -3*gap)/2
-    }
-    else if(nRows > 2){
-      regionHeight = (3*svgDims.height - (nRows+1)*svgDims.width)/(nRows-2)
-      regionWidth = regionHeight
-      gap = (1/3)*(svgDims.width - 2*regionHeight)
+      regionHeight = (svgDims.height - (nRows+1)*gap)/nRows
+
+      for(let i in regionLabels){
+        let rowMultiplier = Math.floor((parseInt(i))/nRows) + 1
+        let colMultiplier = ((parseInt(i)) % nRows) + 1
+        let obj = {}
+        obj["id"] = regionLabels[i]
+
+        obj['xDim'] = (((gap + regionWidth) * rowMultiplier)-regionWidth)/svgDims.width
+        obj['yDim'] = (((gap + regionHeight) * colMultiplier))/svgDims.height
+        obj['width'] = regionWidth
+        obj['height'] = regionHeight
+        regionCoordsArray.push(obj)
+      }
     }
 
 
     console.log("regionHeight + gap", regionHeight, regionWidth, gap)
-    for(let i in regionLabels){
-      let rowMultiplier = Math.floor((parseInt(i))/nRows) + 1
-      let colMultiplier = ((parseInt(i)) % nRows) + 1
-      console.log("MULTIPLIERS", rowMultiplier, colMultiplier)
-      console.log("REGION", gap, regionWidth, regionHeight)
-      console.log("SVG DIMS", svgDims.height, svgDims.width)
-      let obj = {}
-      obj["id"] = regionLabels[i]
 
-      obj['xDim'] = (((gap + regionWidth) * rowMultiplier)-regionWidth)/svgDims.width
-      obj['yDim'] = (((gap + regionHeight) * colMultiplier))/svgDims.height
-      obj['width'] = regionWidth
-      obj['height'] = regionHeight
-      console.log("X_DIM", (((gap + regionWidth) * rowMultiplier)-regionWidth)/svgDims.width)
-      console.log("Y_DIM", (((gap + regionHeight) * colMultiplier))/svgDims.height)
-      regionCoordsArray.push(obj)
+    return [regionCoordsArray, regionHeight, regionWidth]
+
+  }
+
+  function generateRegionUnitCoords(data, labelName, regionCoordsArray, regionHeight, regionWidth, padding=20, dispersionFactor=1000){
+    const svg = d3.select('svg')
+
+    const viewBox = svg.attr("viewBox").split(",")
+    const svgDims = {
+      height: parseFloat(viewBox[3]),
+      width: parseFloat(viewBox[2]),
     }
-    return regionCoordsArray
 
+    console.log("SVGDIMS", svgDims)
+    const regionUnits = []
+
+    for(let idx in data){
+      let obj = {}
+      let region = data[idx][labelName]
+      let xGauss = gaussian(0, (regionWidth/svgDims.width)/dispersionFactor)
+      let yGauss = gaussian(0, (regionHeight/svgDims.height)/dispersionFactor)
+      // console.log("REGION", region)
+      obj["fr_id"] = data[idx]["fr_id"]
+      obj["message"] = data[idx]["message"]
+      obj["fr"] = data[idx]["fr"]
+      obj['kmeans_labels'] = data[idx]["kmeans_labels"]
+      obj['region'] = data[idx]["region"]
+      obj['xDim'] = (regionCoordsArray.find(reg => reg.id === region)['xDim'])+regionWidth/svgDims.width
+      obj['yDim'] = (regionCoordsArray.find(clus => clus.id === region)['yDim'])
+      // console.log("REGIONWIDTH", regionWidth)
+      // console.log('YDIM:', (regionCoordsArray.find(clus => clus.id === region)['yDim']))
+      regionUnits.push(obj)
+    }
+      return regionUnits
+  }
+
+  function generateRegions(){
+    const [regionCoordsArray, regionHeight, regionWidth] = generateRegionCoords(props.data, 'region')
+    console.log("REGIONCOORDSARRAY", regionCoordsArray)
+    const regionUnitsArray = generateRegionUnitCoords(props.data, 'region', regionCoordsArray, regionHeight, regionHeight)
+    setDataObj(regionUnitsArray)
+    setRegions(regionCoordsArray)
   }
 
   function changeZoom(e, changeParam){
@@ -155,11 +210,7 @@ export default function D3CanvasWrapper(props){
     }
   }
 
-  function generateRegions(){
-    const regionCoordsArray = generateRegionCoords(props.data, 'region')
-    console.log("REGIONCOORDSARRAY", regionCoordsArray)
-    setRegions(regionCoordsArray)
-  }
+
 
   return(
     <div className="canvasWrapper">

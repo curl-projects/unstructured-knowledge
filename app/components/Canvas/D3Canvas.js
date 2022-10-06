@@ -93,6 +93,13 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         d3.select(ref.current).selectAll(".labelNode").remove()
       })
 
+    d3.select(ref.current)
+      .selectAll('.regionNode')
+      .transition()
+      .duration(1000)
+      .attr('opacity', 0)
+      .remove()
+
 
     // X-AXIS
     var x = d3.scaleLinear()
@@ -226,21 +233,24 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
         .attr("transform", "translate(" + 80 + "," + 0 + ")")
         .call(d3.axisLeft(y));
 
-      const brushLayer = svg.append("g")
-                            .attr("id", "brushlayer")
-
-      const brush = d3.brush()
-                      .on("start brush end", brushed)
-                      .on("end", function({selection}){
-                        filterBrushedStreamData({selection})
-                        if(!selection){
-                          resetBrushFilter()
-                        }
-                      })
-      brushLayer.call(brush);
 
       const regionLayer = svg.append("g")
                              .attr('id', 'regionlayer')
+
+      const brushLayer = svg.append("g")
+                             .attr("id", "brushlayer")
+
+      const brush = d3.brush()
+                       .on("start brush end", brushed)
+                       .on("end", function({selection}){
+                         filterBrushedStreamData({selection})
+                         if(!selection){
+                           resetBrushFilter()
+                         }
+                       })
+
+      brushLayer.call(brush);
+
       const clusterLayer = svg.append("g")
                               .attr("id", "clusterlayer")
 
@@ -267,6 +277,9 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
 
       const labellayer = svg.append("g")
                             .attr('id', 'labellayer')
+
+      const regionlabellayer = svg.append("g")
+                                  .attr('id', 'regionlabellayer')
 
       function brushed({selection}){
         let value = [];
