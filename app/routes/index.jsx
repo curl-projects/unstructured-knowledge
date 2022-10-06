@@ -14,7 +14,7 @@ import MessageStreamWrapper from "~/components/MessageStream/MessageStreamWrappe
 // DATA
 import d from "~/mock-data/final_output.json"
 
-const data = d.slice(1500).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
+const data = d.slice(1500).map((el) => ({...el, "region": Math.floor(Math.random()*2)}))
 
 export async function action({ request }){
   const formData = await request.formData()

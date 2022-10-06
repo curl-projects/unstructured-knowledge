@@ -185,7 +185,7 @@ export default function D3CanvasWrapper(props){
       obj['kmeans_labels'] = data[idx]["kmeans_labels"]
       obj['region'] = data[idx]["region"]
       obj['xDim'] = (regionCoordsArray.find(reg => reg.id === region)['xDim'])+regionWidth/svgDims.width
-      obj['yDim'] = (regionCoordsArray.find(clus => clus.id === region)['yDim'])
+      obj['yDim'] = (regionCoordsArray.find(clus => clus.id === region)['yDim'])-regionHeight/svgDims.height
       // console.log("REGIONWIDTH", regionWidth)
       // console.log('YDIM:', (regionCoordsArray.find(clus => clus.id === region)['yDim']))
       regionUnits.push(obj)
