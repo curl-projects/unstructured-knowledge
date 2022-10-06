@@ -154,16 +154,38 @@ export default function D3CanvasWrapper(props){
       }
     }
 
-
-    console.log("REGION WIDTH INITIAL", regionWidth)
-
-    return [regionCoordsArray, regionHeight, regionWidth]
+    return regionCoordsArray
 
   }
 
-  function generateRegionUnitCoords(data, labelName, regionCoordsArray, regionHeight, regionWidth, padding=20, dispersionFactor=150){
-    const svg = d3.select('svg')
+  function generateRegionClusterCoords(data, regionCoordsArray){
+    console.log("REGION COORDS DATA:", regionCoordsArray)
 
+    const padding = 30
+
+    for(let region of regionCoordsArray){
+      // find all clusters within the region
+      let filteredData = data.filter(a => a.region == region.id)
+      let labels = filteredData.map(a => a.regionCluster)
+      let regionClusterLabels = Array.from(new Set(labels))
+
+      for(let i in regionClusterLabels){
+        let obj = {}
+
+        obj['id'] = `${region.id}-${regionClusterLabels[i]}`
+        obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
+        // assign a new id to the cluster
+
+        // add to the coordsArray
+
+      }
+    }
+    const regionClusterCoordsArray = []
+  }
+
+  function generateRegionUnitCoords(data, labelName, regionCoordsArray, padding=20, dispersionFactor=150){
+    const svg = d3.select('svg')
+    const [regionWidth, regionHeight] = [regionCoordsArray[0].width, regionCoordsArray[0].height]
     const viewBox = svg.attr("viewBox").split(",")
     const svgDims = {
       height: parseFloat(viewBox[3]),
@@ -195,12 +217,15 @@ export default function D3CanvasWrapper(props){
   }
 
   function generateRegions(){
-    const [regionCoordsArray, regionHeight, regionWidth] = generateRegionCoords(props.data, 'region')
-    console.log("REGION WIIDTH MID", regionWidth)
-    console.log("REGIONCOORDSARRAY", regionCoordsArray)
-    const regionUnitsArray = generateRegionUnitCoords(props.data, 'region', regionCoordsArray, regionHeight, regionWidth)
+    const regionCoordsArray = generateRegionCoords(props.data, 'region')
+    const regionUnitsArray = generateRegionUnitCoords(props.data, 'region', regionCoordsArray)
     setDataObj(regionUnitsArray)
     setRegions(regionCoordsArray)
+  }
+
+  function generateClusteredRegions(){
+    const regionCoordsArray = generateRegionCoords(props.data, 'region')
+    generateRegionClusterCoords(props.data, regionCoordsArray)
   }
 
   function changeZoom(e, changeParam){
@@ -270,6 +295,17 @@ export default function D3CanvasWrapper(props){
           width: '60px'
         }}>
           Generate Regions
+      </button>
+      <button
+        onClick={generateClusteredRegions}
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 500,
+          height: '40px',
+          width: '60px'
+        }}>
+          Generate Clustered Regions
       </button>
     </div>
 
