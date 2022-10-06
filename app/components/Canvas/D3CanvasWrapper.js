@@ -155,13 +155,13 @@ export default function D3CanvasWrapper(props){
     }
 
 
-    console.log("regionHeight + gap", regionHeight, regionWidth, gap)
+    console.log("REGION WIDTH INITIAL", regionWidth)
 
     return [regionCoordsArray, regionHeight, regionWidth]
 
   }
 
-  function generateRegionUnitCoords(data, labelName, regionCoordsArray, regionHeight, regionWidth, padding=20, dispersionFactor=1000){
+  function generateRegionUnitCoords(data, labelName, regionCoordsArray, regionHeight, regionWidth, padding=20, dispersionFactor=150){
     const svg = d3.select('svg')
 
     const viewBox = svg.attr("viewBox").split(",")
@@ -170,22 +170,23 @@ export default function D3CanvasWrapper(props){
       width: parseFloat(viewBox[2]),
     }
 
-    console.log("SVGDIMS", svgDims)
+    console.log("REGIONWIDTH CLOSE", regionWidth)
     const regionUnits = []
 
     for(let idx in data){
       let obj = {}
       let region = data[idx][labelName]
-      let xGauss = gaussian(0, (regionWidth/svgDims.width)/dispersionFactor)
-      let yGauss = gaussian(0, (regionHeight/svgDims.height)/dispersionFactor)
+      let xGauss = gaussian(0, ((regionWidth-2*padding)/svgDims.width)/dispersionFactor)
+      let yGauss = gaussian(0, ((regionHeight-2*padding)/svgDims.height)/dispersionFactor)
       // console.log("REGION", region)
       obj["fr_id"] = data[idx]["fr_id"]
       obj["message"] = data[idx]["message"]
       obj["fr"] = data[idx]["fr"]
       obj['kmeans_labels'] = data[idx]["kmeans_labels"]
       obj['region'] = data[idx]["region"]
-      obj['xDim'] = (regionCoordsArray.find(reg => reg.id === region)['xDim'])+regionWidth/svgDims.width
-      obj['yDim'] = (regionCoordsArray.find(clus => clus.id === region)['yDim'])-regionHeight/svgDims.height
+      obj['xDim'] = (regionCoordsArray.find(reg => reg.id === region)['xDim'])+(0.5*regionWidth/svgDims.width) + xGauss.random(1)[0]
+      obj['yDim'] = (regionCoordsArray.find(clus => clus.id === region)['yDim'])-(0.5*regionHeight/svgDims.height) + yGauss.random(1)[0]
+      console.log("REGION WIDTH", regionWidth)
       // console.log("REGIONWIDTH", regionWidth)
       // console.log('YDIM:', (regionCoordsArray.find(clus => clus.id === region)['yDim']))
       regionUnits.push(obj)
@@ -195,8 +196,9 @@ export default function D3CanvasWrapper(props){
 
   function generateRegions(){
     const [regionCoordsArray, regionHeight, regionWidth] = generateRegionCoords(props.data, 'region')
+    console.log("REGION WIIDTH MID", regionWidth)
     console.log("REGIONCOORDSARRAY", regionCoordsArray)
-    const regionUnitsArray = generateRegionUnitCoords(props.data, 'region', regionCoordsArray, regionHeight, regionHeight)
+    const regionUnitsArray = generateRegionUnitCoords(props.data, 'region', regionCoordsArray, regionHeight, regionWidth)
     setDataObj(regionUnitsArray)
     setRegions(regionCoordsArray)
   }
