@@ -17,14 +17,10 @@ export default function D3CanvasWrapper(props){
   function generateUniformCoords(data){
     const coordsArray = []
     for(let idx in data){
-      let obj = {}
-      obj["fr_id"] = data[idx]['fr_id']
-      obj["message"] = data[idx]["message"]
-      obj["fr"] = data[idx]["fr"]
-      obj['kmeans_labels'] = data[idx]["kmeans_labels"]
-      obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
-      obj['yDim'] = (Math.random() * (yMax-yMin)) + yMin
-      obj['region'] = data[idx]["region"]
+      let obj = {...data[idx],
+                 "xDim": (Math.random() * (xMax-xMin)) + xMin,
+                 "yDim": (Math.random() * (yMax-yMin)) + yMin,
+                }
 
       coordsArray.push(obj)
     }
@@ -35,17 +31,14 @@ export default function D3CanvasWrapper(props){
     const clusterUnits = []
 
     for(let idx in data){
-      let obj = {}
-      let cluster = region ? `${data[idx]["region"]}-${data[idx][labelName]}` : data[idx][labelName]
+      let cluster = data[idx][labelName]
       let xGauss = gaussian(0, (xMax-xMin)/dispersionFactor)
       let yGauss = gaussian(0, (yMax-yMin)/dispersionFactor)
 
-      obj["fr_id"] = data[idx]["fr_id"]
-      obj["message"] = data[idx]["message"]
-      obj["fr"] = data[idx]["fr"]
-      obj['kmeans_labels'] = data[idx]["kmeans_labels"]
-      obj['xDim'] = clusterCoordsArray.find(clus => clus.id === cluster)['xDim'] + xGauss.random(1)[0]
-      obj['yDim'] = clusterCoordsArray.find(clus => clus.id === cluster)['yDim'] + yGauss.random(1)[0]
+      let obj = {...data[idx],
+                 "xDim": clusterCoordsArray.find(clus => clus.id === cluster)['xDim'] + xGauss.random(1)[0],
+                 "yDim": clusterCoordsArray.find(clus => clus.id === cluster)['yDim'] + yGauss.random(1)[0],
+                }
       clusterUnits.push(obj)
     }
     return clusterUnits
@@ -75,7 +68,7 @@ export default function D3CanvasWrapper(props){
         obj["id"] = clusterLabels[i]
         obj['xDim'] = (Math.random() * (xMax-xMin)) + xMin
         obj['yDim'] = (Math.random() * (yMax-yMin)) + yMin
-
+        obj['type'] = 'cluster'
         clusterCoordsArray.push(obj)
       }
       return clusterCoordsArray
@@ -194,17 +187,16 @@ export default function D3CanvasWrapper(props){
           num+=1
           let obj = {}
 
-          obj['id'] = `${region.id}-${regionClusterLabels[i]}`
+          obj['id'] = regionClusterLabels[i]
           obj['xDim'] = (Math.random() * (regionWidth-padding)/svgDims.width) + (region.xDim + padding/svgDims.width)
           obj['yDim'] = (Math.random() * (regionHeight-padding)/svgDims.height) + (region.yDim - (regionHeight + padding)/svgDims.height)
-
+          obj['type'] = 'regionCluster'
           regionClusterCoordsArray.push(obj)
         }
       }
         console.log('I!!', num)
         return regionClusterCoordsArray
     }
-
     function generateRegionUnitCoords(data, labelName, regionCoordsArray, padding=20, dispersionFactor=150){
       const svg = d3.select('svg')
       const [regionWidth, regionHeight] = [regionCoordsArray[0].width, regionCoordsArray[0].height]
@@ -218,21 +210,15 @@ export default function D3CanvasWrapper(props){
       const regionUnits = []
 
       for(let idx in data){
-        let obj = {}
-        let region = data[idx][labelName]
         let xGauss = gaussian(0, ((regionWidth-2*padding)/svgDims.width)/dispersionFactor)
         let yGauss = gaussian(0, ((regionHeight-2*padding)/svgDims.height)/dispersionFactor)
-        // console.log("REGION", region)
-        obj["fr_id"] = data[idx]["fr_id"]
-        obj["message"] = data[idx]["message"]
-        obj["fr"] = data[idx]["fr"]
-        obj['kmeans_labels'] = data[idx]["kmeans_labels"]
-        obj['region'] = data[idx]["region"]
-        obj['xDim'] = (regionCoordsArray.find(reg => reg.id === region)['xDim'])+(0.5*regionWidth/svgDims.width) + xGauss.random(1)[0]
-        obj['yDim'] = (regionCoordsArray.find(clus => clus.id === region)['yDim'])-(0.5*regionHeight/svgDims.height) + yGauss.random(1)[0]
-        console.log("REGION WIDTH", regionWidth)
-        // console.log("REGIONWIDTH", regionWidth)
-        // console.log('YDIM:', (regionCoordsArray.find(clus => clus.id === region)['yDim']))
+        let region = data[idx][labelName]
+
+        let obj = {...data[idx],
+                   "xDim": (regionCoordsArray.find(reg => reg.id === region)['xDim'])+(0.5*regionWidth/svgDims.width) + xGauss.random(1)[0],
+                   "yDim": (regionCoordsArray.find(clus => clus.id === region)['yDim'])-(0.5*regionHeight/svgDims.height) + yGauss.random(1)[0]
+                  }
+
         regionUnits.push(obj)
       }
         return regionUnits
@@ -258,16 +244,6 @@ export default function D3CanvasWrapper(props){
   }
 
 
-  function changeZoom(e, changeParam){
-    if(!changeParam){
-      props.resetZoomedData()
-    }
-    else{
-      props.setZoomObject(changeParam)
-    }
-  }
-
-
   return(
     <div className="canvasWrapper">
     <D3Canvas
@@ -278,6 +254,7 @@ export default function D3CanvasWrapper(props){
       searchResults={props.searchResults}
       zoomObject={props.zoomObject}
       setZoomObject={props.setZoomObject}
+      resetZoomedData={props.resetZoomedData}
       style={{height: "100%"}}
       filterBrushedData={props.filterBrushedData}
       resetBrushFilter={props.resetBrushFilter}
@@ -305,7 +282,7 @@ export default function D3CanvasWrapper(props){
           Uniformly Distribute Data
       </button>
       <button
-        onClick={(e)=>changeZoom(e, null)}
+        onClick={()=>props.setZoomObject(null)}
         style={{
           position: 'absolute',
           bottom: 30,

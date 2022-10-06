@@ -12,7 +12,7 @@ function usePrevious(value) {
 
 export default function D3Canvas({ data, clusters, regions, searchResults, filterBrushedData,
                                    resetBrushFilter, zoomObject, setZoomObject,
-                                   displayControl}) {
+                                   displayControl, resetZoomedData}) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
@@ -86,7 +86,8 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
             .attr('cy', d => y(d.yDim))
             .attr('fill', "blue")
             .on("click", function(e){
-              setZoomObject(e.target.__data__.id)
+              console.log("DATA", e.target.__data__)
+              setZoomObject({"id": e.target.__data__.id, "type": e.target.__data__.type})
             })
             .transition(1000)
               .delay(500)
@@ -136,6 +137,7 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
 
     // UNGROUPED DATA
     if(displayControl.data && !displayControl.clusters && !displayControl.regions){
+      resetZoomedData()
       prevDisplayControl?.clusters && tearDownClusters()
       prevDisplayControl?.clusters && tearDownClusterLabels()
       prevDisplayControl?.regions && tearDownRegions()
@@ -201,26 +203,33 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
         .domain(yDomain)
         .range([ref.current.clientHeight, 0]);
 
-      const transforms = [[]].concat(d3.groups(data, d => d['kmeans_labels']).map(([key, data])=> {
+      let zoomObjectMap = {
+        'cluster': "kmeans_labels",
+        'regionCluster': 'regionCluster'
+      }
+
+      const clusterIdName =  zoomObjectMap[zoomObject.type]
+
+      const transforms = [[]].concat(d3.groups(data, d => d[clusterIdName]).map(([key, data])=> {
         const [x0, x1] = d3.extent(data, d => d["xDim"]).map(x);
         const [y1, y0] = d3.extent(data, d => d['yDim']).map(y);
         let margin = 10
         const k = 0.1*Math.min(ref.current.clientWidth / (x1+2*margin - x0), ref.current.clientHeight / (y1+2*margin - y0));
         const tx = (ref.current.clientWidth - k * (x0 + x1)) / 2;
         const ty = (ref.current.clientHeight - k * (y0 + y1)) / 2;
-        return [data[0]['kmeans_labels'], d3.zoomIdentity.translate(tx, ty).scale(k)];
+        return [data[0][clusterIdName], d3.zoomIdentity.translate(tx, ty).scale(k)];
       }))
 
-      const transform = transforms.find((el) => el[0] === zoomObject)
+      const transform = transforms.find((el) => el[0] === zoomObject.id)
 
       d3.select('svg').transition().duration(1000).call(zoom.transform, transform[1]);
     }
     else{
-      console.log("ZOOM executed")
+
       d3.select('svg').transition().duration(1000).call(zoom.transform, d3.zoomIdentity.scale(1));
 
     }
-  }, [zoomObject])
+  }, [zoomObject, displayControl])
 
   // SEARCH ANIMATIONS
   useEffect(()=>{

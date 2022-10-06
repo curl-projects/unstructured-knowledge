@@ -14,7 +14,8 @@ import MessageStreamWrapper from "~/components/MessageStream/MessageStreamWrappe
 // DATA
 import d from "~/mock-data/final_output.json"
 
-const data = d.slice(1500).map((el) => ({...el, "region": Math.floor(Math.random()*4), "regionCluster": Math.floor(Math.random()*1)}))
+const data = d.slice(1500).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
+                          .map((el) => ({...el, "regionCluster": `${el.region}-${Math.floor(Math.random()*3)}`}))
 
 export async function action({ request }){
   const formData = await request.formData()
@@ -81,7 +82,14 @@ export default function Index() {
   }
 
   function filterZoomedData(zoomObject){
-    const filteredData = data.filter(obj => obj.kmeans_labels === zoomObject)
+    let zoomObjectMap = {
+      'cluster': "kmeans_labels",
+      'regionCluster': 'regionCluster'
+    }
+
+    const clusterIdName =  zoomObjectMap[zoomObject.type]
+
+    const filteredData = data.filter(obj => obj[clusterIdName] === zoomObject.id)
     setTopLevelStreamDataObj(filteredData)
   }
 

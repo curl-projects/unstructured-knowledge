@@ -7,7 +7,7 @@ export default function MessageStreamMetadata(props){
 
   return(
     <div className='messageStreamMetadataRow'>
-      {props.zoomObject && <p>Viewing data for Cluster {props.zoomObject}</p>}
+      {props.zoomObject && <p>Viewing data for Cluster {props.zoomObject.id}</p>}
       <p>{props.data.length} feature requests</p>
       <div>
         <p>Sort By</p>
