@@ -1,13 +1,175 @@
 import { useD3 } from '~/utils/useD3';
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import * as d3 from 'd3';
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
-
-export default function D3Canvas({ data, clusters, searchResults, filterBrushedData,
-                                   resetBrushFilter, zoomObject, setZoomObject, regions}) {
+export default function D3Canvas({ data, clusters, regions, searchResults, filterBrushedData,
+                                   resetBrushFilter, zoomObject, setZoomObject,
+                                   displayControl}) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
+
+  const prevDisplayControl = usePrevious(displayControl)
+
+  useEffect(()=>{
+
+    console.log("PREV DISPLAY CONTROL", prevDisplayControl)
+    console.log("CURRENT DISPLAY CONTROL", displayControl)
+    var x = d3.scaleLinear()
+    .domain(xDomain)
+    .range([0, ref.current.clientWidth]);
+
+    // Y-AXIS
+    var y = d3.scaleLinear()
+      .domain(yDomain)
+      .range([ref.current.clientHeight, 0]);
+
+    function tearDownClusters(){
+      console.log("EXECUTED CLUSTER TEARDOWN")
+      // TEAR DOWN CLUSTER BLOBS
+      d3.select(ref.current)
+        .selectAll(".clusterNode")
+        .transition()
+        .duration(500)
+        .attr('r', 0)
+        .remove()
+    }
+
+    function tearDownClusterLabels(){
+      d3.select(ref.current)
+        .selectAll(".labelNodeText")
+        .transition()
+        .duration(500)
+        .style('font-size', "0px")
+        .remove()
+        .on("end", function(){
+          d3.select(ref.current).selectAll(".labelNode").remove()
+        })
+    }
+
+    function tearDownRegions(){
+      d3.select(ref.current)
+        .selectAll('.regionNode')
+        .transition()
+        .duration(1000)
+        .attr('opacity', 0)
+        .remove()
+    }
+
+    function renderData(){
+        d3.selectAll(".frNode")
+          .data(data)
+          .transition()
+             .duration(1000)
+             .ease(d3.easeCubicInOut)
+             .attr("stroke", 'red')
+             .attr('cx', d => x(d.xDim))
+             .attr('cy', d => y(d.yDim))
+    }
+
+    function renderClusters(){
+      const clusterNodes = d3.select('#clusterlayer')
+        .selectAll('dot')
+          .data(clusters)
+          .join('circle')
+            .attr('class', "clusterNode")
+            .attr("r", 0)
+            .style('opacity', 0)
+            .attr('cx', d => x(d.xDim))
+            .attr('cy', d => y(d.yDim))
+            .attr('fill', "blue")
+            .on("click", function(e){
+              setZoomObject(e.target.__data__.id)
+            })
+            .transition(1000)
+              .delay(500)
+              .attr("r", 35)
+              .style('opacity', 0.2)
+    }
+
+    function renderClusterLabels(){
+      d3.select('#labellayer')
+        .selectAll("text")
+        .data(clusters)
+        .join("g")
+          .attr("class", "labelNode")
+          .append("text")
+          .attr('class', 'labelNodeText')
+          .attr('dx', d => x(d.xDim))
+          .attr('dy', d => y(d.yDim))
+          .text(d => `${d.id}`)
+          .attr('fill', 'black')
+          .attr("text-anchor", 'middle')
+          .attr("dominant-baseline", 'middle')
+          .style('font', '0px sans-serif')
+          .transition()
+          .delay(500)
+          .duration(500)
+          .style('font-size', '20px');
+    }
+
+    function renderRegions(){
+      console.log("RENDERING REGIONS!")
+      const regionNodes = d3.select("#regionlayer")
+        .selectAll('rect')
+        .data(regions)
+        .join('rect')
+          .attr('class', 'regionNode')
+          .attr('width', d => d.width)
+          .attr('height', d=> d.height)
+          .attr('x', d => x(d.xDim))
+          .attr('y', d => y(d.yDim))
+          .attr('rx', 20)
+          .attr('fill', "pink")
+          .attr('opacity', 0)
+          .transition()
+          .duration(500)
+          .attr('opacity', 0.75)
+      }
+
+    // UNGROUPED DATA
+    if(displayControl.data && !displayControl.clusters && !displayControl.regions){
+      prevDisplayControl?.clusters && tearDownClusters()
+      prevDisplayControl?.clusters && tearDownClusterLabels()
+      prevDisplayControl?.regions && tearDownRegions()
+      renderData()
+    }
+
+    // CLUSTERS
+    else if(displayControl.data && displayControl.clusters && !displayControl.regions){
+      prevDisplayControl?.clusters && tearDownClusters()
+      prevDisplayControl?.clusters && tearDownClusterLabels()
+      prevDisplayControl?.regions && tearDownRegions()
+      renderData()
+      renderClusters()
+      renderClusterLabels()
+    }
+
+    // UNCLUSTERED REGIONS
+    else if(displayControl.data && !displayControl.clusters && displayControl.regions){
+      prevDisplayControl?.clusters && tearDownClusters()
+      prevDisplayControl?.clusters && tearDownClusterLabels()
+      renderData()
+      !prevDisplayControl?.regions && renderRegions()
+    }
+
+    // CLUSTERED REGIONS
+    else if(displayControl.data && displayControl.clusters && displayControl.regions){
+      prevDisplayControl?.clusters && tearDownClusters()
+      prevDisplayControl?.clusters && tearDownClusterLabels()
+      renderData()
+      renderClusters()
+      renderClusterLabels()
+      !prevDisplayControl?.regions && renderRegions()
+    }
+  }, [data, clusters, regions, displayControl])
 
   // ZOOM ANIMATIONS
   useEffect(()=>{
@@ -75,135 +237,6 @@ export default function D3Canvas({ data, clusters, searchResults, filterBrushedD
     }
   }, [searchResults])
 
-  // MOVEMENT ANIMATION FOR FRs (AND CLUSTER TEARDOWN)
-  useEffect(()=>{
-    d3.select(ref.current)
-      .selectAll(".clusterNode")
-      .transition()
-      .duration(500)
-      .attr('r', 0)
-      .remove()
-
-    d3.select(ref.current)
-      .selectAll(".labelNodeText")
-      .transition()
-      .duration(500)
-      .style('font-size', "0px")
-      .on("end", function(){
-        d3.select(ref.current).selectAll(".labelNode").remove()
-      })
-
-    d3.select(ref.current)
-      .selectAll('.regionNode')
-      .transition()
-      .duration(1000)
-      .attr('opacity', 0)
-      .remove()
-
-
-    // X-AXIS
-    var x = d3.scaleLinear()
-    .domain(xDomain)
-    .range([0, ref.current.clientWidth]);
-
-    // Y-AXIS
-    var y = d3.scaleLinear()
-      .domain(yDomain)
-      .range([ref.current.clientHeight, 0]);
-
-      console.log("EXECUTING!")
-      d3.selectAll(".frNode")
-        .data(data)
-        .transition()
-           .duration(1000)
-           .ease(d3.easeCubicInOut)
-           .attr("stroke", 'red')
-           .attr('cx', d => x(d.xDim))
-           .attr('cy', d => y(d.yDim))
-  }, [data])
-
-  // ADD REGIONS
-  useEffect(()=>{
-    var x = d3.scaleLinear()
-    .domain(xDomain)
-    .range([0, ref.current.clientWidth]);
-
-    // Y-AXIS
-    var y = d3.scaleLinear()
-      .domain(yDomain)
-      .range([ref.current.clientHeight, 0]);
-
-    console.log("REGIONS!", regions)
-    const regionNodes = d3.select("#regionlayer")
-      .selectAll('rect')
-      .data(regions)
-      .join('rect')
-        .attr('class', 'regionNode')
-        .attr('width', d => d.width)
-        .attr('height', d=> d.height)
-        .attr('x', d => x(d.xDim))
-        .attr('y', d => y(d.yDim))
-        .attr('rx', 20)
-        .attr('fill', "pink")
-        .attr('opacity', 0)
-        .transition()
-        .duration(500)
-        .attr('opacity', 0.75)
-
-
-  }, [regions])
-
-  // ADD CLUSTER BLOBS AND LABELS
-  useEffect(()=>{
-    // X-AXIS
-    var x = d3.scaleLinear()
-    .domain(xDomain)
-    .range([0, ref.current.clientWidth]);
-
-
-    // Y-AXIS
-    var y = d3.scaleLinear()
-      .domain(yDomain)
-      .range([ref.current.clientHeight, 0]);
-
-    const clusterNodes = d3.select('#clusterlayer')
-      .selectAll('dot')
-        .data(clusters)
-        .join('circle')
-          .attr('class', "clusterNode")
-          .attr("r", 0)
-          .style('opacity', 0)
-          .attr('cx', d => x(d.xDim))
-          .attr('cy', d => y(d.yDim))
-          .attr('fill', "blue")
-          .on("click", function(e){
-            setZoomObject(e.target.__data__.id)
-          })
-          .transition(1000)
-            .delay(500)
-            .attr("r", 35)
-            .style('opacity', 0.2)
-
-// LABELS
-    d3.select('#labellayer')
-      .selectAll("text")
-      .data(clusters)
-      .join("g")
-        .attr("class", "labelNode")
-        .append("text")
-        .attr('class', 'labelNodeText')
-        .attr('dx', d => x(d.xDim))
-        .attr('dy', d => y(d.yDim))
-        .text(d => `${d.id}`)
-        .attr('fill', 'black')
-        .attr("text-anchor", 'middle')
-        .attr("dominant-baseline", 'middle')
-        .style('font', '0px sans-serif')
-        .transition()
-        .delay(500)
-        .duration(500)
-        .style('font-size', '20px');
-  }, [clusters])
 
   const ref = useD3(
     (svg) => {
