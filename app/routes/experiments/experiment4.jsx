@@ -11,6 +11,7 @@ import { json } from '@remix-run/node';
 
 // COMPONENTS
 import TextEditor from "~/components/TextEditor/TextEditor.js"
+import AITextEditor from "~/components/AITextEditor/AITextEditor.js"
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream.js"
 
@@ -18,7 +19,7 @@ import MessageStream from "~/components/MessageStream/MessageStream.js"
 import d from "~/mock-data/final_output.json"
 
 // STYLES
-import experimentThreeStylesheetUrl from "~/styles/experimentThree.css"
+import experimentFourStylesheetUrl from "~/styles/experimentFour.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
 const data = d.slice(100).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
@@ -26,7 +27,7 @@ const data = d.slice(100).map((el) => ({...el, "region": Math.floor(Math.random(
 
 export const links = () => {
   return [
-    { rel: "stylesheet", href: experimentThreeStylesheetUrl},
+    { rel: "stylesheet", href: experimentFourStylesheetUrl},
     { rel: "stylesheet", href: draftjsStylesheetUrl},
   ]
 }
@@ -119,8 +120,13 @@ export default function ExperimentOne() {
 
   return (
     <div className="pageWrapper">
-      <div className="textBoxWrapper">
-        <TextEditor />
+      <div className="textWrapper">
+        <div className="textBoxWrapper">
+          <TextEditor />
+        </div>
+        <div className="aiTextBoxWrapper">
+          <AITextEditor />
+        </div>
       </div>
       <div className='messageStreamWrapper'>
         <MessageStream
