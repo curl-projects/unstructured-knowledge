@@ -9,21 +9,6 @@ body{
   flex-direction: row;
 }
 
-/* EXPERIMENT ONE */
-.messageStreamWrapper{
-  height: 100vh;
-  width: 30%;
-  border: 2px solid green;
-  box-sizing: border-box;
-  overflow: scroll;
-  padding: 30px;
-}
-
-.canvasWrapper{
-  height: 100%;
-  flex: 1
-}
-
 /* MESSAGE STREAM */
 .messageStreamWrapper{
   height: 100vh;
@@ -81,6 +66,10 @@ body{
 }
 
 /* CANVAS */
+.canvasWrapper{
+  height: 100%;
+  flex: 1
+}
 
 .canvasSVG{
   height: 100%;
