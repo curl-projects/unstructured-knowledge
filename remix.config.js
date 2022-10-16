@@ -1,4 +1,5 @@
 /** @type {import('@remix-run/dev').AppConfig} */
+process.env.HOST = '0.0.0.0'
 module.exports = {
   ignoredRouteFiles: ["**/.*"],
   // appDirectory: "app",
