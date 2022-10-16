@@ -10,7 +10,7 @@ body{
 }
 
 /* EXPERIMENT ONE */
-.exp1MessageStreamWrapper{
+.messageStreamWrapper{
   height: 100vh;
   width: 30%;
   border: 2px solid green;
@@ -19,7 +19,7 @@ body{
   padding: 30px;
 }
 
-.exp1CanvasWrapper{
+.canvasWrapper{
   height: 100%;
   flex: 1
 }

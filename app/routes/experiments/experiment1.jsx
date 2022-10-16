@@ -16,8 +16,19 @@ import MessageStream from "~/components/MessageStream/MessageStream"
 // DATA
 import d from "~/mock-data/final_output.json"
 
+// STYLES
+import experimentOneStylesheetUrl from "~/styles/experimentOne.css"
+
+
 const data = d.slice(100).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
                           .map((el) => ({...el, "regionCluster": `${el.region}-${Math.floor(Math.random()*6)}`}))
+
+export const links = () => {
+  return [
+    { rel: "stylesheet", href: experimentOneStylesheetUrl}
+  ]
+}
+
 
 export async function action({ request }){
   const formData = await request.formData()
@@ -106,7 +117,7 @@ export default function ExperimentOne() {
 
   return (
     <div className="pageWrapper">
-      <div className='exp1MessageStreamWrapper'>
+      <div className='messageStreamWrapper'>
         <MessageStream
           data={topLevelStreamDataObj}
           resetSearchData={resetSearchData}
@@ -114,7 +125,7 @@ export default function ExperimentOne() {
           setZoomObject={setZoomObject}
           />
       </div>
-      <div className="exp1CanvasWrapper">
+      <div className="canvasWrapper">
         <D3CanvasScaffold
           data={topLevelCanvasDataObj}
           searchResults={searchResults}
