@@ -3,13 +3,13 @@ import MessageStreamMetadata from "~/components/MessageStream/MessageStreamMetad
 import MessageCard from "~/components/MessageStream/MessageCard"
 import SearchBar from "~/components/Search/SearchBar"
 
-export default function MessageStreamWrapper(props){
+export default function MessageStream(props){
   // useEffect(()=>{
   //   console.log("MESSAGE STREAM DATA", props.data)
   // }, [props])
 
   return(
-    <div className='messageStreamWrapper'>
+    <>
       <SearchBar
         resetSearchData={props.resetSearchData}
         />
@@ -25,6 +25,6 @@ export default function MessageStreamWrapper(props){
             />
         ))}
       </div>
-    </div>
+    </>
   )
 }

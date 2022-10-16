@@ -10,8 +10,8 @@ import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 
 // COMPONENTS
-import D3CanvasWrapper from "~/components/Canvas/D3CanvasWrapper.js"
-import MessageStreamWrapper from "~/components/MessageStream/MessageStreamWrapper"
+import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
+import MessageStream from "~/components/MessageStream/MessageStream"
 
 // DATA
 import d from "~/mock-data/final_output.json"
@@ -37,7 +37,7 @@ export async function action({ request }){
   }
 }
 
-export default function Index() {
+export default function ExperimentOne() {
 
   const actionData = useActionData();
   const [searchResults, setSearchResults] = useState([])
@@ -106,21 +106,25 @@ export default function Index() {
 
   return (
     <div className="pageWrapper">
-      <MessageStreamWrapper
-        data={topLevelStreamDataObj}
-        resetSearchData={resetSearchData}
-        zoomObject={zoomObject}
-        setZoomObject={setZoomObject}
-        />
-      <D3CanvasWrapper
-        data={topLevelCanvasDataObj}
-        searchResults={searchResults}
-        filterBrushedData={filterBrushedData}
-        resetBrushFilter={resetBrushFilter}
-        zoomObject={zoomObject}
-        setZoomObject={setZoomObject}
-        resetZoomedData={resetZoomedData}
-        />
+      <div className='exp1MessageStreamWrapper'>
+        <MessageStream
+          data={topLevelStreamDataObj}
+          resetSearchData={resetSearchData}
+          zoomObject={zoomObject}
+          setZoomObject={setZoomObject}
+          />
+      </div>
+      <div className="exp1CanvasWrapper">
+        <D3CanvasScaffold
+          data={topLevelCanvasDataObj}
+          searchResults={searchResults}
+          filterBrushedData={filterBrushedData}
+          resetBrushFilter={resetBrushFilter}
+          zoomObject={zoomObject}
+          setZoomObject={setZoomObject}
+          resetZoomedData={resetZoomedData}
+          />
+      </div>
     </div>
   );
 }

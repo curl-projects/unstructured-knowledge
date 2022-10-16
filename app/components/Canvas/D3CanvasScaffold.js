@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import _ from "underscore";
 var gaussian = require('gaussian');
 
-export default function D3CanvasWrapper(props){
+export default function D3CanvasScaffold(props){
   const [xMin, xMax] = [0, 1]
   const [yMin, yMax] = [0, 1]
 
@@ -245,76 +245,76 @@ export default function D3CanvasWrapper(props){
 
 
   return(
-    <div className="canvasWrapper">
-    <D3Canvas
-      data={dataObj}
-      clusters={clusters}
-      regions={regions}
-      displayControl = {displayControl}
-      searchResults={props.searchResults}
-      zoomObject={props.zoomObject}
-      setZoomObject={props.setZoomObject}
-      resetZoomedData={props.resetZoomedData}
-      style={{height: "100%"}}
-      filterBrushedData={props.filterBrushedData}
-      resetBrushFilter={props.resetBrushFilter}
-      />
-    <button
-      onClick={generateClusters}
-      style={{
-        position: 'absolute',
-        bottom: 30,
-        right: 180,
-        height: '40px',
-        width: '60px'
-      }}>
-        Cluster Data
-      </button>
+    <>
+      <D3Canvas
+        data={dataObj}
+        clusters={clusters}
+        regions={regions}
+        displayControl = {displayControl}
+        searchResults={props.searchResults}
+        zoomObject={props.zoomObject}
+        setZoomObject={props.setZoomObject}
+        resetZoomedData={props.resetZoomedData}
+        style={{height: "100%"}}
+        filterBrushedData={props.filterBrushedData}
+        resetBrushFilter={props.resetBrushFilter}
+        />
       <button
-        onClick={generateUniform}
+        onClick={generateClusters}
         style={{
           position: 'absolute',
           bottom: 30,
-          right: 260,
+          right: 180,
           height: '40px',
           width: '60px'
         }}>
-          Uniformly Distribute Data
-      </button>
-      <button
-        onClick={()=>props.setZoomObject(null)}
-        style={{
-          position: 'absolute',
-          bottom: 30,
-          right: 340,
-          height: '40px',
-          width: '60px'
-        }}>
-          Reset Zoom
-      </button>
-      <button
-        onClick={(e) => generateRegions(e, false)}
-        style={{
-          position: 'absolute',
-          bottom: 30,
-          right: 420,
-          height: '40px',
-          width: '60px'
-        }}>
-          Generate Regions
-      </button>
-      <button
-        onClick={(e) => generateRegions(e, true)}
-        style={{
-          position: 'absolute',
-          bottom: 30,
-          right: 500,
-          height: '40px',
-          width: '60px'
-        }}>
-          Generate Clustered Regions
-      </button>
-    </div>
+          Cluster Data
+        </button>
+        <button
+          onClick={generateUniform}
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            right: 260,
+            height: '40px',
+            width: '60px'
+          }}>
+            Uniformly Distribute Data
+        </button>
+        <button
+          onClick={()=>props.setZoomObject(null)}
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            right: 340,
+            height: '40px',
+            width: '60px'
+          }}>
+            Reset Zoom
+        </button>
+        <button
+          onClick={(e) => generateRegions(e, false)}
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            right: 420,
+            height: '40px',
+            width: '60px'
+          }}>
+            Generate Regions
+        </button>
+        <button
+          onClick={(e) => generateRegions(e, true)}
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            right: 500,
+            height: '40px',
+            width: '60px'
+          }}>
+            Generate Clustered Regions
+        </button>
+    </>
 
   )
 }

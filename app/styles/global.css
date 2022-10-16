@@ -1,25 +1,3 @@
-/* .page-wrapper {
-  height: 100vh;
-  width: 100vw;
-}
-
-.message-box-alignment {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 40px;
-
-}
-
-.message-box{
-  width: 20vw;
-  height: 50vh;
-  border: 2px solid black;
-} */
-
 body{
   margin: unset;
 }
@@ -29,6 +7,21 @@ body{
   height: 100vh;
   width: 100vw;
   flex-direction: row;
+}
+
+/* EXPERIMENT ONE */
+.exp1MessageStreamWrapper{
+  height: 100vh;
+  width: 30%;
+  border: 2px solid green;
+  box-sizing: border-box;
+  overflow: scroll;
+  padding: 30px;
+}
+
+.exp1CanvasWrapper{
+  height: 100%;
+  flex: 1
 }
 
 /* MESSAGE STREAM */
@@ -88,10 +81,7 @@ body{
 }
 
 /* CANVAS */
-.canvasWrapper{
-  height: 100%;
-  flex: 1
-}
+
 .canvasSVG{
   height: 100%;
   width: 100%;
