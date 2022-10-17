@@ -11,7 +11,7 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
   // const [isPinned, setIsPinned] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
-  
+
 
   // const options = {day: 'numeric', month: "long", year: "numeric"};
   // const date = props.cardData.created_at ? new Date(props.cardData.created_at).toLocaleDateString('default', options ) : "n.d.";
@@ -54,7 +54,7 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
       onMouseOver={event => handleMouseOver(event, props.cardData.fr_id)}
       onMouseOut={event => handleMouseOut(event, props.cardData.fr_id)}
     >
-      <div 
+      <div
         onClick={() => setIsCardExpanded(!isCardExpanded)}
         className={cn(
           'bg-white px-2 py-1 cursor-pointer tracking-tight rounded-md leading-5 text-sm text-gray-600 font-medium',
@@ -62,6 +62,7 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
         )}
       >
         {props.cardData && cleanSummary}
+        {props.cardData?.score && <b> [{parseFloat(props.cardData.score).toPrecision(3)}]</b>}
       </div>
 
       {(isCardExpanded || isExpanded) && (
@@ -71,6 +72,11 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
           )}>
           <p className='mt-2'><span className='text-gray-400'>@</span>{props.cardData && props.cardData.author}</p>
           <p className=' text-gray-700 leading-5'>{props.cardData.message}</p>
+
+
+          <p><b>Metadata:</b></p>
+          <p>Index: {props.idx}</p>
+          <p>Feature Request Id: {props.cardData.fr_id}</p>
         </div>
       )}
 
@@ -83,7 +89,7 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
               {"visible": isHovered || isPinned},
               {"invisible": !isHovered && !isPinned}
             )} />
-        
+
       </div>
     </div>
   )

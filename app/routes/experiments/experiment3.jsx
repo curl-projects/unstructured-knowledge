@@ -27,6 +27,9 @@ import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
 const data = d.slice(100).map((el) => ({ ...el, "region": Math.floor(Math.random() * 4) }))
   .map((el) => ({ ...el, "regionCluster": `${el.region}-${Math.floor(Math.random() * 6)}` }))
+  .filter((arr, index, self) =>
+    index === self.findIndex((t) => (t.fr_id === arr.fr_id))
+  )
 
 export const links = () => {
   return [
@@ -49,19 +52,19 @@ export async function action({ request }){
   }
 }
 
-export default function ExperimentOne() {
+export default function ExperimentThree() {
 
   const actionData = useActionData();
   const [searchResults, setSearchResults] = useState([])
-  const [topLevelCanvasDataObj, setTopLevelCanvasDataObj] = useState(data)
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
-  const [zoomObject, setZoomObject] = useState(null)
   const [isSubmitted, setSubmitted] = useState(false);
   const [isFocused, setFocus] = useState(false);
 
 
   useEffect(() => {
     console.log("INDEX DATA", data)
+    const card = data.filter(a => a.fr_id === "9378617501356155197428190602647415039")
+    console.log('TROUBLE CARD:', card)
   }, [data])
 
   useEffect(() => {
@@ -80,20 +83,22 @@ export default function ExperimentOne() {
     console.log("FILTERED RESULTS", filteredResults)
 
     let dataIDs = filteredResults.map(a => a.id)
+
     console.log("DATA IDS", dataIDs)
     const filteredData = data.filter(({ fr_id }) => dataIDs.includes(fr_id))
+
     console.log("FILTERED SEARCH DATA!", filteredData)
 
     const sortedFilteredData = filteredData.slice().sort(function(a, b){
-      if(a.message_id === "9420747034959585284215883957277207128"){
-        console.log(a, dataIDs.indexOf(a.message_id))
-      }
-      return  dataIDs.indexOf(a.message_id) - dataIDs.indexOf(b.message_id)
-
+      return dataIDs.indexOf(a.fr_id) - dataIDs.indexOf(b.fr_id)
+    }).map(function(a){
+      const el = filteredResults.find(element => element.id === a.fr_id)
+      return {...a, "score": el.score}
     })
+
     console.log("SORTED FILTERED DATA", sortedFilteredData)
-    // SORT FILTERED DATA
-    setTopLevelStreamDataObj(filteredData)
+
+    setTopLevelStreamDataObj(sortedFilteredData)
     setSearchResults(dataIDs)
   }
 
@@ -103,7 +108,7 @@ export default function ExperimentOne() {
   }
 
   return (
-    <div className="relative  md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-52 2xl:py-32 h-screen w-screen">
+    <div className="relative  md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-96 2xl:py-32 h-screen w-screen">
       <div className="h-full w-full bg-gray-100 border flex">
         <div
           className={cn(
