@@ -11,7 +11,9 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
   // const [isPinned, setIsPinned] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
-  
+  if (props.cardData.fr == "Wider Page") {
+    console.log(props.cardData);
+  }
 
   // const options = {day: 'numeric', month: "long", year: "numeric"};
   // const date = props.cardData.created_at ? new Date(props.cardData.created_at).toLocaleDateString('default', options ) : "n.d.";
@@ -39,14 +41,14 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
     setIsHovered(false);
   }
 
-  // remove hyphen at start or numbers
-  // remove full stop at start
-  // remove full stop at end
-
   const cleanSummary = props.cardData.fr
     .replace(/(<([^>]+)>)/gi, "")
     .replace(/^-/, '').replace(/^[0-9]+/, '')
     .replace(/^\./, "")
+
+  if (!props.cardData.message) {
+    console.log(props.cardData);
+  }
 
   return (
     <div

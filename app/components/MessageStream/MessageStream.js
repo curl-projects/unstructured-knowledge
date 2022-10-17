@@ -9,7 +9,13 @@ export default function MessageStream(props) {
   const paneRef = useRef(null);
 
   const pinCard = (fr_id) => {
-    setPinned([...pins, fr_id])
+    // if not in pins, add it
+    if (!pins.includes(fr_id)) {
+      setPinned([...pins, fr_id]);
+    } else {
+      // if in pins, remove it
+      setPinned(pins.filter(pin => pin !== fr_id));
+    }
   }
 
   useEffect(() => {
