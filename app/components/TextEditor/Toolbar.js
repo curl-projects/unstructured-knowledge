@@ -2,10 +2,10 @@ import React from "react";
 import { RichUtils } from "draft-js";
 
 const inlineStyles = [
-  { type: "BOLD", label: "Bold", toolTip: "Bold" },
-  { type: "ITALIC", label: "Italic", toolTip: "Italic" },
-  { type: "UNDERLINE", label: "Underline", toolTip: "Underline" },
-  { type: "CODE", label: "Code", toolTip: "Code Block" },
+  { type: "BOLD", label: "B", toolTip: "Bold" },
+  { type: "ITALIC", label: "I", toolTip: "Italic" },
+  { type: "UNDERLINE", label: "U", toolTip: "Underline" },
+  { type: "CODE", label: "<>", toolTip: "Code Block" },
 ];
 
 const blockStyles = [
@@ -34,15 +34,17 @@ const Toolbar = (props) => {
     }
 
     return (
+
       <button
         key={index}
         title={style.toolTip}
         onMouseDown={(event) => handleInlineStyle(event, style.type)}
         onClick={(event) => event.preventDefault()}
-        className={className}
+        className={className + " bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md"}
       >
-      {style.label}
+        {style.label}
       </button>
+
     );
   };
 
@@ -59,21 +61,23 @@ const Toolbar = (props) => {
         title={block.toolTip}
         onMouseDown={(event) => handleBlockStyle(event, block.type)}
         onClick={(event) => event.preventDefault()}
-        className={className}
+        className={className + " bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md"}
       >
-      {block.label}
+        {block.label}
       </button>
     );
   };
 
   return (
-    <div id="editor-toolbar">
+    <div id="editor-toolbar" className="flex mx-auto gap-2 bg-white">
+
       {inlineStyles.map((style, index) => {
         return renderInlineStyleButton(style, index);
       })}
       {blockStyles.map((block, index) => {
         return renderBlockStyleButton(block, index);
       })}
+
     </div>
   );
 };

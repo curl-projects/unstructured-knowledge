@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Editor, EditorState, RichUtils } from 'draft-js'
 import Toolbar from '~/components/TextEditor/Toolbar';
 
-export default function RichTextEditor(){
+export default function RichTextEditor({ isSubmitted }) {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
 
   const handleKeyCommand = (command, editorState) => {
@@ -13,18 +13,19 @@ export default function RichTextEditor(){
       return "handled";
     }
     return "not handled";
-  };
+
+  }
+
 
   return (
-    <div id='draft-editor'>
-      <Toolbar editorState={editorState} setEditorState={setEditorState}/>
-      <p></p>
+    <div id='draft-editor' className='relative max-h-full overflow-auto flex flex-col gap-0'>
+      <Toolbar editorState={editorState} setEditorState={setEditorState} />
       <Editor editorState={editorState}
-              onChange={setEditorState}
-              handleKeyCommand={handleKeyCommand}
-              placeholder="Write rich text here!"
-              style={{border: '2px solid black', 'fill':"black"}}
-              />
+        onChange={setEditorState}
+        handleKeyCommand={handleKeyCommand}
+        readOnly={!isSubmitted}
+        placeholder={isSubmitted ? "Sketch out notes here ..." : "Sensemake after Submitting ..."}
+      />
     </div>
   )
 }

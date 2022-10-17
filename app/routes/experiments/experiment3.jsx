@@ -118,10 +118,10 @@ export default function ExperimentOne() {
     setZoomObject(null)
     setTopLevelStreamDataObj(data)
   }
-∫
+
   return (
-    <div className="relative p-24 h-screen w-screen flex border border-gray-200 rounded-lg">
-      <div className="bg-gray-100 grow flex flex-col relative">
+    <div className="relative md:p-24 lg:p-32 h-screen w-screen flex border border-gray-200 rounded-lg">
+      <div className="bg-white grow flex flex-col relative">
         <SearchBar
           resetSearchData={resetSearchData}
           isSubmitted = {isSubmitted}
@@ -129,7 +129,7 @@ export default function ExperimentOne() {
         />
       <TextEditor isSubmitted = {isSubmitted} />
       </div>
-      <div className='bg-gray-100 overflow-auto px-8 xl:w-3/5 md:w-3/5 sm:w-3/5'>
+      <div className='bg-gray-100 overflow-auto pl-10 pr-8 xl:w-3/5 md:w-3/5 sm:w-3/5'>
         <MessageStream
           data={topLevelStreamDataObj}
           zoomObject={zoomObject}

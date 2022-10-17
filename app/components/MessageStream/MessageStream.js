@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import MessageStreamMetadata from "~/components/MessageStream/MessageStreamMetadata"
 import MessageCard from "~/components/MessageStream/MessageCard"
-import SearchBar from "~/components/Search/SearchBar"
 
 export default function MessageStream(props){
   // useEffect(()=>{
@@ -10,10 +9,8 @@ export default function MessageStream(props){
 
   return(
     <>
-      <SearchBar
-        resetSearchData={props.resetSearchData}
-        />
-      <div className='messageStream'>
+      
+      <div className='flex flex-col align-middle pt-4 gap-2'>
         <MessageStreamMetadata
           data={props.data}
           zoomObject={props.zoomObject}
