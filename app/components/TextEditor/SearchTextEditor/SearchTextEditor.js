@@ -3,7 +3,7 @@ import { Editor, EditorState, RichUtils } from 'draft-js'
 import Toolbar from '~/components/TextEditor/Toolbar';
 import cn from 'classnames';
 
-export default function RichTextEditor({ isSubmitted }) {
+export default function SearchTextEditor({ isSubmitted }) {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
 
   const handleKeyCommand = (command, editorState) => {
@@ -19,16 +19,16 @@ export default function RichTextEditor({ isSubmitted }) {
 
   return (
     <div
-      id='draft-editor' 
+      id='draft-editor'
       className={cn(
         'relative max-h-full overflow-auto flex flex-col gap-0',
         {"bg-slate-100 shrink": !isSubmitted},
         {"bg-white grow": isSubmitted},
         )}
-        
+
     >
       {isSubmitted && <Toolbar editorState={editorState} setEditorState={setEditorState} />}
-      <Editor 
+      <Editor
         editorState={editorState}
         onChange={setEditorState}
         handleKeyCommand={handleKeyCommand}
