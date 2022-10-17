@@ -13,6 +13,7 @@ import { json } from '@remix-run/node';
 import TextEditor from "~/components/TextEditor/TextEditor.js"
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream.js"
+import SearchBar from "~/components/Search/SearchBar"
 
 // DATA
 import d from "~/mock-data/final_output.json"
@@ -21,25 +22,25 @@ import d from "~/mock-data/final_output.json"
 import experimentThreeStylesheetUrl from "~/styles/experimentThree.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
-const data = d.slice(100).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
-                          .map((el) => ({...el, "regionCluster": `${el.region}-${Math.floor(Math.random()*6)}`}))
+const data = d.slice(100).map((el) => ({ ...el, "region": Math.floor(Math.random() * 4) }))
+  .map((el) => ({ ...el, "regionCluster": `${el.region}-${Math.floor(Math.random() * 6)}` }))
 
 export const links = () => {
   return [
-    { rel: "stylesheet", href: experimentThreeStylesheetUrl},
-    { rel: "stylesheet", href: draftjsStylesheetUrl},
+    { rel: "stylesheet", href: experimentThreeStylesheetUrl },
+    { rel: "stylesheet", href: draftjsStylesheetUrl },
   ]
 }
 
 
-export async function action({ request }){
+export async function action({ request }) {
   const formData = await request.formData()
   const filterType = formData.get('filterType')
-  if(filterType && filterType === 'search'){
+  if (filterType && filterType === 'search') {
     const searchString = await formData.get("searchString")
     const searchVectorRes = await generateSearchVector(searchString)
     const searchVector = searchVectorRes.data && searchVectorRes.data[0]['embedding']
-    const knn = await getKNNfromSearchVector(searchVector, topK=100)
+    const knn = await getKNNfromSearchVector(searchVector, topK = 100)
     const knnIDs = knn.matches
     const data = {
       knnIDs: knnIDs,
@@ -57,78 +58,83 @@ export default function ExperimentOne() {
   const [topLevelCanvasDataObj, setTopLevelCanvasDataObj] = useState(data)
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
   const [zoomObject, setZoomObject] = useState(null)
+  const [isSubmitted, setSubmitted] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("INDEX DATA", data)
-      }, [data])
+  }, [data])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("ACTION DATA:", actionData)
-    if(actionData?.filterType === 'search'){
-      if(actionData.knnIDs){
+    if (actionData?.filterType === 'search') {
+      if (actionData.knnIDs) {
         filterSearchedData(actionData.knnIDs)
       }
     }
   }, [actionData])
 
-  useEffect(()=>{
-    if(zoomObject){
+  useEffect(() => {
+    if (zoomObject) {
       filterZoomedData(zoomObject)
     }
   }, [zoomObject])
 
-  function filterBrushedData(brushedData){
+  function filterBrushedData(brushedData) {
     let dataIds = brushedData.map(a => a.fr_id)
-    const filteredData = data.filter(({fr_id}) => dataIds.includes(fr_id))
+    const filteredData = data.filter(({ fr_id }) => dataIds.includes(fr_id))
     setTopLevelStreamDataObj(filteredData)
   }
 
-  function resetBrushFilter(){
+  function resetBrushFilter() {
     setTopLevelStreamDataObj(data)
   }
 
-  function filterSearchedData(knnIDs){
+  function filterSearchedData(knnIDs) {
     const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
     let dataIDs = filteredResults.map(a => a.id)
-    const filteredData = data.filter(({fr_id}) => dataIDs.includes(fr_id))
+    const filteredData = data.filter(({ fr_id }) => dataIDs.includes(fr_id))
     setTopLevelStreamDataObj(filteredData)
     setSearchResults(dataIDs)
   }
 
-  function resetSearchData(){
+  function resetSearchData() {
     setTopLevelStreamDataObj(data)
     setSearchResults([])
   }
 
-  function filterZoomedData(zoomObject){
+  function filterZoomedData(zoomObject) {
     let zoomObjectMap = {
       'cluster': "kmeans_labels",
       'regionCluster': 'regionCluster'
     }
 
-    const clusterIdName =  zoomObjectMap[zoomObject.type]
+    const clusterIdName = zoomObjectMap[zoomObject.type]
 
     const filteredData = data.filter(obj => obj[clusterIdName] === zoomObject.id)
     setTopLevelStreamDataObj(filteredData)
   }
 
-  function resetZoomedData(e, changeParam){
+  function resetZoomedData(e, changeParam) {
     setZoomObject(null)
     setTopLevelStreamDataObj(data)
   }
-
+∫
   return (
-    <div className="pageWrapper">
-      <div className="textBoxWrapper">
-        <TextEditor />
+    <div className="relative p-24 h-screen w-screen flex border border-gray-200 rounded-lg">
+      <div className="bg-gray-100 grow flex flex-col relative">
+        <SearchBar
+          resetSearchData={resetSearchData}
+          isSubmitted = {isSubmitted}
+          setSubmitted = {setSubmitted}
+        />
+      <TextEditor isSubmitted = {isSubmitted} />
       </div>
-      <div className='messageStreamWrapper'>
+      <div className='bg-gray-100 overflow-auto px-8 xl:w-3/5 md:w-3/5 sm:w-3/5'>
         <MessageStream
           data={topLevelStreamDataObj}
-          resetSearchData={resetSearchData}
           zoomObject={zoomObject}
           setZoomObject={setZoomObject}
-          />
+        />
       </div>
     </div>
   );
