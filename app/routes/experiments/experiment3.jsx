@@ -76,10 +76,23 @@ export default function ExperimentOne() {
 
 
   function filterSearchedData(knnIDs) {
-    console.log("FILTERING SEARCH DATA!")
     const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
+    console.log("FILTERED RESULTS", filteredResults)
+
     let dataIDs = filteredResults.map(a => a.id)
+    console.log("DATA IDS", dataIDs)
     const filteredData = data.filter(({ fr_id }) => dataIDs.includes(fr_id))
+    console.log("FILTERED SEARCH DATA!", filteredData)
+
+    const sortedFilteredData = filteredData.slice().sort(function(a, b){
+      if(a.message_id === "9420747034959585284215883957277207128"){
+        console.log(a, dataIDs.indexOf(a.message_id))
+      }
+      return  dataIDs.indexOf(a.message_id) - dataIDs.indexOf(b.message_id)
+
+    })
+    console.log("SORTED FILTERED DATA", sortedFilteredData)
+    // SORT FILTERED DATA
     setTopLevelStreamDataObj(filteredData)
     setSearchResults(dataIDs)
   }
