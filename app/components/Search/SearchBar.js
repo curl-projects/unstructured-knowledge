@@ -25,6 +25,13 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, s
     setSearchTerm("");
   }
 
+  const handleBlur = () => {
+    if (searchTerm.length > 0) {
+      return
+    } 
+    setFocus(false);
+  }
+
   return (
     <Form
       // TODO: @finn: make the search query logic work
@@ -52,7 +59,7 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, s
         onChange={handleInput}
         readOnly = {isSubmitted}
         onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}
+        onBlur={() => handleBlur()}
       />
 
       {!isSubmitted && searchTerm.length > 0 && (

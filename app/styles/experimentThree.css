@@ -49,6 +49,10 @@ textarea {
   resize: none;
 }
 
+.textbox-shadow {
+  box-shadow: -16px 16px rgba(0, 0, 0, 0.05);
+}
+
 textarea:focus {
   outline-width: 0;
   outline: none;

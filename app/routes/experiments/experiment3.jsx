@@ -127,7 +127,7 @@ export default function ExperimentOne() {
       <div
         className={cn(
           "bg-white border grow flex flex-col relative transition-all duration-1000 ease-in-out",
-          {'drop-shadow-2xl z-10': isFocused}
+          {'textbox-shadow z-20': isFocused}
         )}
       >
         <SearchBar
