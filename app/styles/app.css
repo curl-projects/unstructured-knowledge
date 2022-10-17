@@ -980,9 +980,9 @@ code {
 }
 
 @media (min-width: 1536px) {
-  .\32xl\:px-52 {
-    padding-left: 13rem;
-    padding-right: 13rem;
+  .\32xl\:px-96 {
+    padding-left: 24rem;
+    padding-right: 24rem;
   }
 
   .\32xl\:py-32 {

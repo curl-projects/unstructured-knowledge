@@ -9,8 +9,12 @@ import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 import cn from 'classnames'
 
-// UTILITIES
+// MODELS
 import { embeddingSearch } from "~/models/search-embeddings.server"
+
+// UTILITIES
+import { filterSearchedData } from "~/utils/filterSearchedData.js"
+import { manipulateInputData } from "~/utils/manipulateInputData.js"
 
 // COMPONENTS
 import TextEditor from "~/components/TextEditor/TextEditor.js"
@@ -25,10 +29,7 @@ import d from "~/mock-data/final_output.json"
 import experimentThreeStylesheetUrl from "~/styles/experimentThree.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
-
-
-const data = d.slice(100).map((el) => ({ ...el, "region": Math.floor(Math.random() * 4) }))
-  .map((el) => ({ ...el, "regionCluster": `${el.region}-${Math.floor(Math.random() * 6)}` }))
+const data = manipulateInputData(d)
 
 export const links = () => {
   return [
@@ -51,13 +52,11 @@ export async function action({ request }){
   }
 }
 
-export default function ExperimentOne() {
+export default function ExperimentThree() {
 
   const actionData = useActionData();
   const [searchResults, setSearchResults] = useState([])
-  const [topLevelCanvasDataObj, setTopLevelCanvasDataObj] = useState(data)
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
-  const [zoomObject, setZoomObject] = useState(null)
   const [isSubmitted, setSubmitted] = useState(false);
   const [isFocused, setFocus] = useState(false);
 
@@ -66,6 +65,8 @@ export default function ExperimentOne() {
 
   useEffect(() => {
     console.log("INDEX DATA", data)
+    const card = data.filter(a => a.fr_id === "9378617501356155197428190602647415039")
+    console.log('TROUBLE CARD:', card)
   }, [data])
 
   useEffect(() => {
@@ -73,33 +74,11 @@ export default function ExperimentOne() {
     if (actionData?.filterType === 'search') {
       if (actionData.knnIDs) {
         console.log("EXECUTING!")
-        filterSearchedData(actionData.knnIDs)
+        filterSearchedData(data, actionData.knnIDs, setTopLevelStreamDataObj, setSearchResults)
       }
     }
   }, [actionData])
 
-
-  function filterSearchedData(knnIDs) {
-    const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
-    console.log("FILTERED RESULTS", filteredResults)
-
-    let dataIDs = filteredResults.map(a => a.id)
-    console.log("DATA IDS", dataIDs)
-    const filteredData = data.filter(({ fr_id }) => dataIDs.includes(fr_id))
-    console.log("FILTERED SEARCH DATA!", filteredData)
-
-    const sortedFilteredData = filteredData.slice().sort(function(a, b){
-      if(a.message_id === "9420747034959585284215883957277207128"){
-        console.log(a, dataIDs.indexOf(a.message_id))
-      }
-      return  dataIDs.indexOf(a.message_id) - dataIDs.indexOf(b.message_id)
-
-    })
-    console.log("SORTED FILTERED DATA", sortedFilteredData)
-    // SORT FILTERED DATA
-    setTopLevelStreamDataObj(filteredData)
-    setSearchResults(dataIDs)
-  }
 
   function resetSearchData() {
     setTopLevelStreamDataObj(data)
@@ -107,8 +86,8 @@ export default function ExperimentOne() {
   }
 
   return (
-    <div className="relative md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-52 2xl:py-32 h-screen w-screen">
-      <div className="h-full w-full border border-gray-200  flex">
+    <div className="relative  md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-96 2xl:py-32 h-screen w-screen">
+      <div className="h-full w-full bg-gray-100 border flex">
         <div
           className={cn(
             "bg-white bg-clip-border  grow flex flex-col relative transition-all duration-500 ease-in-out",

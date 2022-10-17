@@ -58,6 +58,7 @@ export default function MessageStream(props) {
         <div className="pl-10 pr-8 flex flex-col gap-2">
           {pinnedCards.map((cardData, idx) => (
             <MessageCard
+              idx={idx}
               key={cardData.fr_id}
               cardData={cardData}
               isExpanded={isExpanded}
@@ -68,6 +69,7 @@ export default function MessageStream(props) {
           {pinnedCards.length > 0 && <h1 className="text-gray-400 text-xs font-medium pl-4">Remaining Feature Requests</h1>}
           {remainingCards.map((cardData, idx) => (
             <MessageCard
+              idx={idx}
               key={cardData.fr_id}
               cardData={cardData}
               isExpanded={isExpanded}
