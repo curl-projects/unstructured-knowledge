@@ -9,7 +9,7 @@ import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 
 // UTILITIES
-import { embeddingSearch } from "~/utils/actionComponents/embeddingSearch"
+import { embeddingSearch } from "~/models/search-embeddings.server"
 
 // COMPONENTS
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
@@ -37,7 +37,7 @@ export async function action({ request }){
   const formData = await request.formData()
   const filterType = formData.get('filterType')
   if(filterType && filterType === 'search'){
-    const knnIDs = embeddingSearch(formData)
+    const knnIDs = await embeddingSearch(formData)
     const data = {
       knnIDs: knnIDs,
       filterType: filterType

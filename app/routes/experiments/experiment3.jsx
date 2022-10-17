@@ -5,10 +5,12 @@ import * as d3 from "d3"
 
 // REACT & REMIX
 import { useState, useEffect } from "react";
-import { generateSearchVector, getKNNfromSearchVector } from "~/models/search-embeddings.server"
 import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 import cn from 'classnames'
+
+// UTILITIES
+import { embeddingSearch } from "~/models/search-embeddings.server"
 
 // COMPONENTS
 import TextEditor from "~/components/TextEditor/TextEditor.js"
@@ -34,20 +36,15 @@ export const links = () => {
 }
 
 
-export async function action({ request }) {
+export async function action({ request }){
   const formData = await request.formData()
   const filterType = formData.get('filterType')
-  if (filterType && filterType === 'search') {
-    const searchString = await formData.get("searchString")
-    const searchVectorRes = await generateSearchVector(searchString)
-    const searchVector = searchVectorRes.data && searchVectorRes.data[0]['embedding']
-    const knn = await getKNNfromSearchVector(searchVector, topK = 100)
-    const knnIDs = knn.matches
+  if(filterType && filterType === 'search'){
+    const knnIDs = await embeddingSearch(formData)
     const data = {
       knnIDs: knnIDs,
       filterType: filterType
     }
-
     return json(data)
   }
 }
@@ -68,31 +65,18 @@ export default function ExperimentOne() {
   }, [data])
 
   useEffect(() => {
-    console.log("ACTION DATA:", actionData)
+    console.log("ACTION DATA", actionData)
     if (actionData?.filterType === 'search') {
       if (actionData.knnIDs) {
+        console.log("EXECUTING!")
         filterSearchedData(actionData.knnIDs)
       }
     }
   }, [actionData])
 
-  useEffect(() => {
-    if (zoomObject) {
-      filterZoomedData(zoomObject)
-    }
-  }, [zoomObject])
-
-  function filterBrushedData(brushedData) {
-    let dataIds = brushedData.map(a => a.fr_id)
-    const filteredData = data.filter(({ fr_id }) => dataIds.includes(fr_id))
-    setTopLevelStreamDataObj(filteredData)
-  }
-
-  function resetBrushFilter() {
-    setTopLevelStreamDataObj(data)
-  }
 
   function filterSearchedData(knnIDs) {
+    console.log("FILTERING SEARCH DATA!")
     const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
     let dataIDs = filteredResults.map(a => a.id)
     const filteredData = data.filter(({ fr_id }) => dataIDs.includes(fr_id))
@@ -103,23 +87,6 @@ export default function ExperimentOne() {
   function resetSearchData() {
     setTopLevelStreamDataObj(data)
     setSearchResults([])
-  }
-
-  function filterZoomedData(zoomObject) {
-    let zoomObjectMap = {
-      'cluster': "kmeans_labels",
-      'regionCluster': 'regionCluster'
-    }
-
-    const clusterIdName = zoomObjectMap[zoomObject.type]
-
-    const filteredData = data.filter(obj => obj[clusterIdName] === zoomObject.id)
-    setTopLevelStreamDataObj(filteredData)
-  }
-
-  function resetZoomedData(e, changeParam) {
-    setZoomObject(null)
-    setTopLevelStreamDataObj(data)
   }
 
   return (
@@ -142,8 +109,6 @@ export default function ExperimentOne() {
         <div className='bg-gray-100 overflow-y overflow-x-hidden xl:w-2/5 md:w-3/5 sm:w-3/5'>
           <MessageStream
             data={topLevelStreamDataObj}
-            zoomObject={zoomObject}
-            setZoomObject={setZoomObject}
           />
         </div>
       </div>
