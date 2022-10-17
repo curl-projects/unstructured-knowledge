@@ -123,27 +123,29 @@ export default function ExperimentOne() {
   }
 
   return (
-    <div className="relative md:p-24 lg:p-32 xl:p-40 2xl:p-52 h-screen w-screen flex border border-gray-200 rounded-lg">
-      <div
-        className={cn(
-          "bg-white border grow flex flex-col relative transition-all duration-1000 ease-in-out",
-          {'textbox-shadow z-20': isFocused}
-        )}
-      >
-        <SearchBar
-          resetSearchData={resetSearchData}
-          isSubmitted={isSubmitted}
-          setSubmitted={setSubmitted}
-          setFocus={setFocus}
-        />
-        <TextEditor isSubmitted={isSubmitted} />
-      </div>
-      <div className='bg-gray-100 overflow-y overflow-x-hidden xl:w-2/5 md:w-3/5 sm:w-3/5'>
-        <MessageStream
-          data={topLevelStreamDataObj}
-          zoomObject={zoomObject}
-          setZoomObject={setZoomObject}
-        />
+    <div className="relative  md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-52 2xl:py-32 h-screen w-screen">
+      <div className="h-full w-full bg-gray-100 border flex">
+        <div
+          className={cn(
+            "bg-white bg-clip-border  grow flex flex-col relative transition-all duration-500 ease-in-out",
+            { 'textbox-shadow z-20 translate-x-2 -translate-y-2 border border-gray-200': isFocused }
+          )}
+        >
+          <SearchBar
+            resetSearchData={resetSearchData}
+            isSubmitted={isSubmitted}
+            setSubmitted={setSubmitted}
+            setFocus={setFocus}
+          />
+          <TextEditor isSubmitted={isSubmitted} />
+        </div>
+        <div className='bg-gray-100 overflow-y overflow-x-hidden xl:w-2/5 md:w-3/5 sm:w-3/5'>
+          <MessageStream
+            data={topLevelStreamDataObj}
+            zoomObject={zoomObject}
+            setZoomObject={setZoomObject}
+          />
+        </div>
       </div>
     </div>
   );

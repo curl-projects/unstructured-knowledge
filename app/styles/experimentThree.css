@@ -2,7 +2,8 @@ html,
 body {
     margin: 0;
     height: 100%;
-    overflow: hidden
+    overflow: hidden;
+    box-sizing: content-box;
 }
 
 /* MESSAGE STREAM INNER CLASSES */
@@ -50,7 +51,7 @@ textarea {
 }
 
 .textbox-shadow {
-  box-shadow: -16px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: -16px 16px rgba(0, 0, 0, 0.03);
 }
 
 textarea:focus {
