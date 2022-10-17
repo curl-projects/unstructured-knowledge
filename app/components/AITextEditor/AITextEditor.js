@@ -1,9 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Editor, EditorState, RichUtils } from 'draft-js'
 import AIToolbar from '~/components/TextEditor/Toolbar';
 
 export default function AITextEditor(){
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+
+  useEffect(()=>{
+    console.log("EDITOR STATE!", editorState)
+  }, [editorState])
 
   const handleKeyCommand = (command, editorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
