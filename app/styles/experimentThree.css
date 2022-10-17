@@ -29,8 +29,8 @@ body {
 .messageCard {
   background-color: #fafafa;
   border: 1px solid #e7e7e7;
-  border-radius: 12px;
-  padding: 4px;
+  border-radius: 0px;
+  padding: 3px;
   transition: 0.3s ease-in-out all;
   text-overflow: clip;
 }
@@ -82,7 +82,7 @@ textarea:focus {
 }
 
 div.DraftEditor-root {
-  background-color: rgb(248 250 252);
+  background-color: "#FFFFFF";
   width: 100%;
   height: 100%;
   max-height: 100%;
