@@ -699,8 +699,8 @@ video {
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
 }
 
-.bg-slate-100\/90 {
-  background-color: rgb(241 245 249 / 0.9);
+.bg-gray-100\/90 {
+  background-color: rgb(243 244 246 / 0.9);
 }
 
 .bg-slate-50 {

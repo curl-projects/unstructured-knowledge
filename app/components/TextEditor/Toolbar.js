@@ -1,16 +1,17 @@
 import React from "react";
 import { RichUtils } from "draft-js";
+import { BiBold, BiItalic, BiUnderline, BiListUl, BiListOl, BiCodeBlock } from 'react-icons/bi';
 
 const inlineStyles = [
-  { type: "BOLD", label: "B", toolTip: "Bold" },
-  { type: "ITALIC", label: "I", toolTip: "Italic" },
-  { type: "UNDERLINE", label: "U", toolTip: "Underline" },
-  { type: "CODE", label: "<>", toolTip: "Code Block" },
+  { type: "BOLD", label: <BiBold />, toolTip: "Bold" },
+  { type: "ITALIC", label: <BiItalic />, toolTip: "Italic" },
+  { type: "UNDERLINE", label: <BiUnderline />, toolTip: "Underline" },
+  { type: "CODE", label: <BiCodeBlock />, toolTip: "Code Block" },
 ];
 
 const blockStyles = [
-  { type: "unordered-list-item", label: "Unordered List", toolTip: "Unordered List" },
-  { type: "ordered-list-item", label: "Ordered List", toolTip: "Ordered List" },
+  { type: "unordered-list-item", label: <BiListUl />, toolTip: "Unordered List" },
+  { type: "ordered-list-item", label: <BiListOl />, toolTip: "Ordered List" },
 ];
 
 const Toolbar = (props) => {
@@ -71,12 +72,17 @@ const Toolbar = (props) => {
   return (
     <div id="editor-toolbar" className="flex mx-auto gap-2 bg-white">
 
-      {inlineStyles.map((style, index) => {
-        return renderInlineStyleButton(style, index);
-      })}
-      {blockStyles.map((block, index) => {
-        return renderBlockStyleButton(block, index);
-      })}
+      <div className="flex gap-0">
+        {inlineStyles.map((style, index) => {
+          return renderInlineStyleButton(style, index);
+        })}
+      </div>
+      <div className="flex gap-0">
+        {blockStyles.map((block, index) => {
+          return renderBlockStyleButton(block, index);
+        })}
+
+      </div>
 
     </div>
   );

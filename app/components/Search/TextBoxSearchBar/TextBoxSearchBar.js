@@ -53,11 +53,12 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
 
       <textarea
       className= {cn(
-          "pt-5 pl-5 text-start tracking-tight font-bold text-gray-700 text-4xl",
+          "pt-5 pl-5 text-start font-bold text-gray-700 text-4xl",
           {"grow": !isSubmitted},
           {"h-fit": isSubmitted},
           {"cursor-not-allowed": isSubmitted}
       )}
+        
         type="text"
         name="searchString"
         value = {searchTerm}
@@ -70,7 +71,7 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
 
       {!isSubmitted && searchTerm.length > 0 && (
         <button
-          className="m-2 p-2 rounded-lg bg-slate-300 hover:bg-slate-400 text-white font-bold"
+          className="m-2 p-2 bg-slate-300 hover:bg-slate-400 text-white font-bold"
           type="submit"
           onClick={(e) => submitIfFull(e)}>
           Submit
@@ -78,7 +79,7 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
       )}
       {isSubmitted && (
        <button
-       className="m-2 p-2 rounded-lg bg-slate-300 hover:bg-slate-400 text-white font-bold"
+       className="m-2 p-2  bg-slate-300 hover:bg-slate-400 text-white font-bold"
        type="submit"
       onClick={(e) => startOver()}
       >
