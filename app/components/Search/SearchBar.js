@@ -2,7 +2,9 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import cn from "classnames";
 
-export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, searchTerm, setSearchTerm}) {
+export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, setFocus}) {
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleInput = (event) => {
     setSearchTerm(event.target.value);
@@ -31,13 +33,14 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, s
         "flex flex-col",
         {"shrink": isSubmitted},
         {"grow": !isSubmitted}
+      
   )}
     >
       <input type='hidden' name="filterType" value="search" />
 
       <textarea 
       className= {cn(
-          "pt-5 px-5 text-start tracking-tight font-bold text-gray-700 text-4xl",
+          "pt-5 pl-5 text-start tracking-tight font-bold text-gray-700 text-4xl",
           {"grow": !isSubmitted},
           {"h-fit": isSubmitted},
           {"cursor-not-allowed": isSubmitted}
@@ -48,6 +51,8 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, s
         placeholder={"Enter a Feature Description"}
         onChange={handleInput}
         readOnly = {isSubmitted}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
       />
 
       {!isSubmitted && searchTerm.length > 0 && (

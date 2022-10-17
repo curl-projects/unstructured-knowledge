@@ -60,9 +60,8 @@ export default function ExperimentOne() {
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
   const [zoomObject, setZoomObject] = useState(null)
   const [isSubmitted, setSubmitted] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [isFocused, setFocus] = useState(false);
 
-  console.log("search", searchTerm)
 
   useEffect(() => {
     console.log("INDEX DATA", data)
@@ -128,15 +127,14 @@ export default function ExperimentOne() {
       <div
         className={cn(
           "bg-white border grow flex flex-col relative transition-all duration-1000 ease-in-out",
-          {'drop-shadow-2xl': searchTerm}
+          {'drop-shadow-2xl z-10': isFocused}
         )}
       >
         <SearchBar
           resetSearchData={resetSearchData}
           isSubmitted={isSubmitted}
           setSubmitted={setSubmitted}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          setFocus={setFocus}
         />
         <TextEditor isSubmitted={isSubmitted} />
       </div>

@@ -10,7 +10,7 @@ export default function MessageStreamMetadata({isExpanded, setIsExpanded, scroll
 
   
   return (
-    <div className='flex w-full justify-between items-center sticky top-0 px-4 py-2 z-10 bg-slate-100/50 backdrop-blur-lg text-xs'>
+    <div className='flex w-full justify-between items-center sticky top-0 px-4 py-2 z-10 bg-slate-100/90 backdrop-blur-sm text-xs'>
       <p
         className="text-gray-800 font-bold"
       >
