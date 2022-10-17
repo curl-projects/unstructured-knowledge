@@ -25,6 +25,8 @@ import d from "~/mock-data/final_output.json"
 import experimentThreeStylesheetUrl from "~/styles/experimentThree.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
+
+
 const data = d.slice(100).map((el) => ({ ...el, "region": Math.floor(Math.random() * 4) }))
   .map((el) => ({ ...el, "regionCluster": `${el.region}-${Math.floor(Math.random() * 6)}` }))
 
@@ -58,6 +60,8 @@ export default function ExperimentOne() {
   const [zoomObject, setZoomObject] = useState(null)
   const [isSubmitted, setSubmitted] = useState(false);
   const [isFocused, setFocus] = useState(false);
+
+  
 
 
   useEffect(() => {
@@ -103,7 +107,7 @@ export default function ExperimentOne() {
   }
 
   return (
-    <div className="relative  md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-52 2xl:py-32 h-screen w-screen">
+    <div className="relative md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-52 2xl:py-32 h-screen w-screen">
       <div className="h-full w-full border border-gray-200  flex">
         <div
           className={cn(

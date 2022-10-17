@@ -1,20 +1,23 @@
 html,
 body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    box-sizing: content-box;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: content-box;
 }
 
+
+
+
 /* MESSAGE STREAM INNER CLASSES */
-.messageStream{
+.messageStream {
   display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: center;
 }
 
-.messageStreamMetadataRow{
+.messageStreamMetadataRow {
   border: 2px solid grey;
   width: 90%;
   margin-bottom: 10px;
@@ -23,7 +26,7 @@ body {
   box-sizing: border-box;
 }
 
-.messageCard{
+.messageCard {
   background-color: #fafafa;
   border: 1px solid #e7e7e7;
   border-radius: 12px;
@@ -33,7 +36,7 @@ body {
 }
 
 /* SEARCH INNER CLASSES */
-.searchBarWrapper{
+.searchBarWrapper {
   /* border: 4px solid blue; */
   display: flex;
   justify-content: center;
@@ -43,9 +46,10 @@ body {
 }
 
 textarea::placeholder {
-  color: #e0e0e0;
+  color: #bdbcbc80;
   white-space: pre-line;
 }
+
 textarea {
   resize: none;
 }
@@ -62,11 +66,11 @@ textarea:focus {
 /* TEXTBOX STYLES */
 div.DraftEditor-root {
   background-color: rgb(248 250 252);
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
   max-height: 100%;
   overflow-y: scroll;
-  
+
   flex-grow: 1;
   padding: 20px;
   font-size: 18px;

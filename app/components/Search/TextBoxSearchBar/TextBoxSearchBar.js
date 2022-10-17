@@ -1,8 +1,11 @@
 import { Form, useSubmit, useTransition } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import cn from "classnames";
+// IMAGES
+import boids from "../../../../public/assets/boids.gif";
 
-export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmitted, setFocus}) {
+
+export default function TextBoxSearchBar({ resetSearchData, isSubmitted, setSubmitted, setFocus }) {
   const submit = useSubmit();
   const transition = useTransition()
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,7 +14,7 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
     setSearchTerm(event.target.value);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("TRANSITION STATE", transition.state)
   }, [transition.state])
 
@@ -19,7 +22,7 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
     if (searchTerm.length > 0) {
       event.preventDefault();
       setSubmitted(true);
-      submit(event.currentTarget, {method: 'post'})
+      submit(event.currentTarget, { method: 'post' })
       resetSearchData();
     } else {
       event.preventDefault();
@@ -38,33 +41,41 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
     setFocus(false);
   }
 
+  const boidsBg = {
+    backgroundImage: `url(${boids})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundFilter: "opacity(0.5)",
+  }
+
   return (
     <Form
       // TODO: @finn: make the search query logic work
       method="post"
       className={cn(
         "flex flex-col",
-        {"shrink": isSubmitted},
-        {"grow": !isSubmitted}
+        { "shrink": isSubmitted },
+        { "grow": !isSubmitted }
 
-  )}
+      )}
     >
       <input type='hidden' name="filterType" value="search" />
 
       <textarea
-      className= {cn(
+        style={boidsBg}
+        className={cn(
           "pt-5 pl-5 text-start font-bold text-gray-700 text-4xl",
-          {"grow": !isSubmitted},
-          {"h-fit": isSubmitted},
-          {"cursor-not-allowed": isSubmitted}
-      )}
-        
+          { "grow": !isSubmitted },
+          { "h-fit": isSubmitted },
+          { "cursor-not-allowed": isSubmitted }
+        )}
         type="text"
         name="searchString"
-        value = {searchTerm}
+        value={searchTerm}
         placeholder={"Enter a Feature Description"}
         onChange={handleInput}
-        readOnly = {isSubmitted}
+        readOnly={isSubmitted}
         onFocus={() => setFocus(true)}
         onBlur={() => handleBlur()}
       />
@@ -78,13 +89,13 @@ export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmi
         </button>
       )}
       {isSubmitted && (
-       <button
-       className="m-2 p-2  bg-slate-300 hover:bg-slate-400 text-white font-bold"
-       type="submit"
-      onClick={(e) => startOver()}
-      >
-        {transition.state === 'submitting' ? "Finding relevant features..." : "Start Over"}
-      </button>
+        <button
+          className="m-2 p-2  bg-slate-300 hover:bg-slate-400 text-white font-bold"
+          type="submit"
+          onClick={(e) => startOver()}
+        >
+          {transition.state === 'submitting' ? "Finding relevant features..." : "Start Over"}
+        </button>
       )}
     </Form>
   )
