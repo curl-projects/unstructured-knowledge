@@ -1,0 +1,89 @@
+body{
+  margin: 0;
+}
+
+.pageWrapper{
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: row;
+}
+
+/* TOP LEVEL WRAPPERS */
+.textBoxWrapper {
+  flex: 0.5;
+  border: 2px solid black;
+  box-sizing: border-box;
+}
+
+.messageStreamWrapper{
+  height: 100vh;
+  flex: 0.5;
+  border: 2px solid green;
+  box-sizing: border-box;
+  overflow: scroll;
+  padding: 30px;
+}
+
+
+/* MESSAGE STREAM INNER CLASSES */
+
+.messageStream{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.messageStreamMetadataRow{
+  border: 2px solid grey;
+  width: 90%;
+  margin-bottom: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
+}
+
+.messageCard{
+  border: 2px solid black;
+  width: 90%;
+  height: 160px;
+  overflow: scroll;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* SEARCH INNER CLASSES */
+.searchBarWrapper{
+  /* border: 4px solid blue; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 5px;
+}
+
+.searchBar{
+  border: 2px solid black;
+  width: 90%;
+  height: 40px;
+  font-size: 20px;
+}
+
+.searchButton{
+  height: 40px;
+}
+
+
+/* TEXTBOX STYLES */
+div.DraftEditor-root {
+  background-color: #fffef7;
+  width:80%;
+  margin:auto;
+  box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.5);
+  height:90vh;
+  overflow-y: scroll;
+  padding:20px;
+  font-size: 18px;
+  font-family: 'calibri', sans-serif;
+}
