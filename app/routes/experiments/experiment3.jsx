@@ -9,8 +9,12 @@ import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 import cn from 'classnames'
 
-// UTILITIES
+// MODELS
 import { embeddingSearch } from "~/models/search-embeddings.server"
+
+// UTILITIES
+import { filterSearchedData } from "~/utils/filterSearchedData.js"
+import { manipulateInputData } from "~/utils/manipulateInputData.js"
 
 // COMPONENTS
 import TextEditor from "~/components/TextEditor/TextEditor.js"
@@ -25,11 +29,7 @@ import d from "~/mock-data/final_output.json"
 import experimentThreeStylesheetUrl from "~/styles/experimentThree.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
-const data = d.slice(100).map((el) => ({ ...el, "region": Math.floor(Math.random() * 4) }))
-  .map((el) => ({ ...el, "regionCluster": `${el.region}-${Math.floor(Math.random() * 6)}` }))
-  .filter((arr, index, self) =>
-    index === self.findIndex((t) => (t.fr_id === arr.fr_id))
-  )
+const data = manipulateInputData(d)
 
 export const links = () => {
   return [
@@ -72,35 +72,11 @@ export default function ExperimentThree() {
     if (actionData?.filterType === 'search') {
       if (actionData.knnIDs) {
         console.log("EXECUTING!")
-        filterSearchedData(actionData.knnIDs)
+        filterSearchedData(data, actionData.knnIDs, setTopLevelStreamDataObj, setSearchResults)
       }
     }
   }, [actionData])
 
-
-  function filterSearchedData(knnIDs) {
-    const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
-    console.log("FILTERED RESULTS", filteredResults)
-
-    let dataIDs = filteredResults.map(a => a.id)
-
-    console.log("DATA IDS", dataIDs)
-    const filteredData = data.filter(({ fr_id }) => dataIDs.includes(fr_id))
-
-    console.log("FILTERED SEARCH DATA!", filteredData)
-
-    const sortedFilteredData = filteredData.slice().sort(function(a, b){
-      return dataIDs.indexOf(a.fr_id) - dataIDs.indexOf(b.fr_id)
-    }).map(function(a){
-      const el = filteredResults.find(element => element.id === a.fr_id)
-      return {...a, "score": el.score}
-    })
-
-    console.log("SORTED FILTERED DATA", sortedFilteredData)
-
-    setTopLevelStreamDataObj(sortedFilteredData)
-    setSearchResults(dataIDs)
-  }
 
   function resetSearchData() {
     setTopLevelStreamDataObj(data)

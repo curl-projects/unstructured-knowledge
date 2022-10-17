@@ -1,10 +1,11 @@
-import { Form } from "@remix-run/react";
+import { Form, useTransition } from "@remix-run/react";
 import { useState } from "react";
 import cn from "classnames";
 
 export default function SearchBar(){
 
   const [searchTerm, setSearchTerm] = useState("");
+  const transition = useTransition()
 
   const handleInput = (event) => {
     setSearchTerm(event.target.value);
@@ -36,7 +37,7 @@ export default function SearchBar(){
         <button
           className="m-2 p-2 rounded-lg bg-slate-300 hover:bg-slate-400 text-white font-bold"
           type="submit">
-          Search
+          {transition.state === 'submitting' ? "Searching..." : "Search"}
         </button>
       )}
     </Form>

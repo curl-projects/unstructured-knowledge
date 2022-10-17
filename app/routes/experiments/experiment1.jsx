@@ -8,8 +8,12 @@ import { useState, useEffect } from "react";
 import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 
-// UTILITIES
+// MODELS
 import { embeddingSearch } from "~/models/search-embeddings.server"
+
+// UTILITIES
+import { filterSearchedData } from "~/utils/filterSearchedData.js"
+import { manipulateInputData } from "~/utils/manipulateInputData.js"
 
 // COMPONENTS
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
@@ -23,8 +27,7 @@ import d from "~/mock-data/final_output.json"
 import experimentOneStylesheetUrl from "~/styles/experimentOne.css"
 
 
-const data = d.slice(100).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
-                          .map((el) => ({...el, "regionCluster": `${el.region}-${Math.floor(Math.random()*6)}`}))
+const data = manipulateInputData(d)
 
 export const links = () => {
   return [
@@ -62,7 +65,7 @@ export default function ExperimentOne() {
     console.log("ACTION DATA:", actionData)
     if(actionData?.filterType === 'search'){
       if(actionData.knnIDs){
-        filterSearchedData(actionData.knnIDs)
+        filterSearchedData(data, actionData.knnIDs, setTopLevelStreamDataObj, setSearchResults)
       }
     }
   }, [actionData])
@@ -83,13 +86,6 @@ export default function ExperimentOne() {
     setTopLevelStreamDataObj(data)
   }
 
-  function filterSearchedData(knnIDs){
-    const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
-    let dataIDs = filteredResults.map(a => a.id)
-    const filteredData = data.filter(({fr_id}) => dataIDs.includes(fr_id))
-    setTopLevelStreamDataObj(filteredData)
-    setSearchResults(dataIDs)
-  }
 
   function resetSearchData(){
     setTopLevelStreamDataObj(data)
