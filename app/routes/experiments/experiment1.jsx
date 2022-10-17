@@ -5,13 +5,16 @@ import * as d3 from "d3"
 
 // REACT & REMIX
 import { useState, useEffect } from "react";
-import { generateSearchVector, getKNNfromSearchVector } from "~/models/search-embeddings.server"
 import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
+
+// UTILITIES
+import { embeddingSearch } from "~/utils/actionComponents/embeddingSearch"
 
 // COMPONENTS
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream"
+import SearchBar from "~/components/Search/SearchBar/SearchBar.js"
 
 // DATA
 import d from "~/mock-data/final_output.json"
@@ -34,16 +37,11 @@ export async function action({ request }){
   const formData = await request.formData()
   const filterType = formData.get('filterType')
   if(filterType && filterType === 'search'){
-    const searchString = await formData.get("searchString")
-    const searchVectorRes = await generateSearchVector(searchString)
-    const searchVector = searchVectorRes.data && searchVectorRes.data[0]['embedding']
-    const knn = await getKNNfromSearchVector(searchVector, topK=100)
-    const knnIDs = knn.matches
+    const knnIDs = embeddingSearch(formData)
     const data = {
       knnIDs: knnIDs,
       filterType: filterType
     }
-
     return json(data)
   }
 }
@@ -118,6 +116,7 @@ export default function ExperimentOne() {
   return (
     <div className="pageWrapper">
       <div className='messageStreamWrapper'>
+        <SearchBar />
         <MessageStream
           data={topLevelStreamDataObj}
           resetSearchData={resetSearchData}

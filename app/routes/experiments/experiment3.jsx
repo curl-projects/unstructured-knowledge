@@ -14,7 +14,7 @@ import cn from 'classnames'
 import TextEditor from "~/components/TextEditor/TextEditor.js"
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream.js"
-import SearchBar from "~/components/Search/SearchBar"
+import TextBoxSearchBar from "~/components/Search/TextBoxSearchBar/TextBoxSearchBar"
 
 // DATA
 import d from "~/mock-data/final_output.json"
@@ -131,7 +131,7 @@ export default function ExperimentOne() {
             { 'textbox-shadow z-20 translate-x-2 -translate-y-2 border border-gray-200': isFocused }
           )}
         >
-          <SearchBar
+          <TextBoxSearchBar
             resetSearchData={resetSearchData}
             isSubmitted={isSubmitted}
             setSubmitted={setSubmitted}
