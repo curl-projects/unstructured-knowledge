@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Editor, EditorState, RichUtils } from 'draft-js'
 import Toolbar from '~/components/TextEditor/Toolbar';
 import cn from 'classnames';
@@ -17,12 +17,17 @@ export default function SearchTextEditor({ isSubmitted }) {
 
   }
 
+  useEffect(() => {
+    console.log("clearing editor state")
+    setEditorState(EditorState.createEmpty())
+  }, [isSubmitted])
+
   return (
     <div
       id='draft-editor'
       className={cn(
         'relative max-h-full overflow-auto flex flex-col gap-0',
-        {"bg-slate-100 shrink": !isSubmitted},
+        {"bg-gray-50 shrink": !isSubmitted},
         {"bg-white grow": isSubmitted},
         )}
 

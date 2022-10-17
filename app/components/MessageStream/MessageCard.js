@@ -5,7 +5,7 @@ import cn from "classnames";
 import { AiOutlinePushpin } from "react-icons/ai";
 
 
-export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props}) {
+export default function MessageCard({ isExpanded, isPinned, pinCard, ...props}) {
 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
   // const [isPinned, setIsPinned] = useState(true);
@@ -59,7 +59,7 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
       <div
         onClick={() => setIsCardExpanded(!isCardExpanded)}
         className={cn(
-          'bg-white px-2 py-1 cursor-pointer tracking-tight rounded-md leading-5 text-sm text-gray-600 font-medium',
+          'bg-white px-1 py-1 cursor-pointer tracking-tight  leading-5 text-sm text-gray-600 font-medium',
           {"text-gray-800": isHovered}
         )}
       >
