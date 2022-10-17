@@ -17,7 +17,7 @@ import { filterSearchedData } from "~/utils/filterSearchedData.js"
 import { manipulateInputData } from "~/utils/manipulateInputData.js"
 
 // COMPONENTS
-import TextEditor from "~/components/TextEditor/TextEditor.js"
+import SearchTextEditor from "~/components/TextEditor/SearchTextEditor/SearchTextEditor.js"
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream.js"
 import TextBoxSearchBar from "~/components/Search/TextBoxSearchBar/TextBoxSearchBar"
@@ -98,7 +98,7 @@ export default function ExperimentThree() {
             setSubmitted={setSubmitted}
             setFocus={setFocus}
           />
-          <TextEditor isSubmitted={isSubmitted} />
+          <SearchTextEditor isSubmitted={isSubmitted} />
         </div>
         <div className='bg-gray-100 overflow-y overflow-x-hidden xl:w-2/5 md:w-3/5 sm:w-3/5'>
           <MessageStream

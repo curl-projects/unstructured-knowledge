@@ -16,7 +16,7 @@ import { filterSearchedData } from "~/utils/filterSearchedData.js"
 import { manipulateInputData } from "~/utils/manipulateInputData.js"
 
 // COMPONENTS
-import TextEditor from "~/components/TextEditor/TextEditor.js"
+import GeneralTextEditor from "~/components/TextEditor/GeneralTextEditor/GeneralTextEditor.js"
 import AITextEditor from "~/components/AITextEditor/AITextEditor.js"
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream.js"
@@ -120,7 +120,7 @@ export default function ExperimentOne() {
     <div className="pageWrapper">
       <div className="textWrapper">
         <div className="textBoxWrapper">
-          <TextEditor />
+          <GeneralTextEditor />
         </div>
         <div className="aiTextBoxWrapper">
           <AITextEditor />
