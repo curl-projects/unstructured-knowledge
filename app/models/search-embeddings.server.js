@@ -36,3 +36,12 @@ export async function getKNNfromSearchVector(vector, topK=1){
 
   return res.json()
   }
+
+export async function embeddingSearch(formData){
+  const searchString = await formData.get("searchString")
+  const searchVectorRes = await generateSearchVector(searchString)
+  const searchVector = searchVectorRes.data && searchVectorRes.data[0]['embedding']
+  const knn = await getKNNfromSearchVector(searchVector, topK=4)
+  const knnIDs = knn.matches
+  return knnIDs
+}

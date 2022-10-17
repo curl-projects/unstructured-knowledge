@@ -1,19 +1,25 @@
-import { Form } from "@remix-run/react";
-import { useState } from "react";
+import { Form, useSubmit, useTransition } from "@remix-run/react";
+import { useState, useEffect } from "react";
 import cn from "classnames";
 
-export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, setFocus}) {
-
+export default function TextBoxSearchBar({resetSearchData, isSubmitted, setSubmitted, setFocus}) {
+  const submit = useSubmit();
+  const transition = useTransition()
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleInput = (event) => {
     setSearchTerm(event.target.value);
   };
-  
+
+  useEffect(()=>{
+    console.log("TRANSITION STATE", transition.state)
+  }, [transition.state])
+
   const submitIfFull = (event) => {
     if (searchTerm.length > 0) {
       event.preventDefault();
       setSubmitted(true);
+      submit(event.currentTarget, {method: 'post'})
       resetSearchData();
     } else {
       event.preventDefault();
@@ -28,24 +34,24 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, s
   const handleBlur = () => {
     if (searchTerm.length > 0) {
       return
-    } 
+    }
     setFocus(false);
   }
 
   return (
     <Form
       // TODO: @finn: make the search query logic work
-      // method="post" 
+      method="post"
       className={cn(
         "flex flex-col",
         {"shrink": isSubmitted},
         {"grow": !isSubmitted}
-      
+
   )}
     >
       <input type='hidden' name="filterType" value="search" />
 
-      <textarea 
+      <textarea
       className= {cn(
           "pt-5 pl-5 text-start font-bold text-gray-700 text-4xl",
           {"grow": !isSubmitted},
@@ -77,10 +83,9 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, s
        type="submit"
       onClick={(e) => startOver()}
       >
-        Start Over
+        {transition.state === 'submitting' ? "Finding relevant features..." : "Start Over"}
       </button>
       )}
-
     </Form>
   )
 }
