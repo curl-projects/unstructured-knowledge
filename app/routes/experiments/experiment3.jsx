@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { generateSearchVector, getKNNfromSearchVector } from "~/models/search-embeddings.server"
 import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
+import cn from 'classnames'
 
 // COMPONENTS
 import TextEditor from "~/components/TextEditor/TextEditor.js"
@@ -59,6 +60,8 @@ export default function ExperimentOne() {
   const [topLevelStreamDataObj, setTopLevelStreamDataObj] = useState(data)
   const [zoomObject, setZoomObject] = useState(null)
   const [isSubmitted, setSubmitted] = useState(false);
+  const [isFocused, setFocus] = useState(false);
+
 
   useEffect(() => {
     console.log("INDEX DATA", data)
@@ -120,16 +123,22 @@ export default function ExperimentOne() {
   }
 
   return (
-    <div className="relative md:p-24 lg:p-32 h-screen w-screen flex border border-gray-200 rounded-lg">
-      <div className="bg-white grow flex flex-col relative">
+    <div className="relative md:p-24 lg:p-32 xl:p-40 2xl:p-52 h-screen w-screen flex border border-gray-200 rounded-lg">
+      <div
+        className={cn(
+          "bg-white border grow flex flex-col relative transition-all duration-1000 ease-in-out",
+          {'textbox-shadow z-20': isFocused}
+        )}
+      >
         <SearchBar
           resetSearchData={resetSearchData}
-          isSubmitted = {isSubmitted}
-          setSubmitted = {setSubmitted}
+          isSubmitted={isSubmitted}
+          setSubmitted={setSubmitted}
+          setFocus={setFocus}
         />
-      <TextEditor isSubmitted = {isSubmitted} />
+        <TextEditor isSubmitted={isSubmitted} />
       </div>
-      <div className='bg-gray-100 overflow-auto pl-10 pr-8 xl:w-3/5 md:w-3/5 sm:w-3/5'>
+      <div className='bg-gray-100 overflow-y overflow-x-hidden xl:w-2/5 md:w-3/5 sm:w-3/5'>
         <MessageStream
           data={topLevelStreamDataObj}
           zoomObject={zoomObject}

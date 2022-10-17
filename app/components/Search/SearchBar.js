@@ -2,20 +2,19 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import cn from "classnames";
 
-export default function SearchBar({resetSearchData, isSubmitted, setSubmitted}) {
+export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, setFocus}) {
 
-  
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleInput = (event) => {
     setSearchTerm(event.target.value);
-    resetSearchData();
   };
   
   const submitIfFull = (event) => {
     if (searchTerm.length > 0) {
       event.preventDefault();
       setSubmitted(true);
+      resetSearchData();
     } else {
       event.preventDefault();
     }
@@ -26,6 +25,13 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted}) 
     setSearchTerm("");
   }
 
+  const handleBlur = () => {
+    if (searchTerm.length > 0) {
+      return
+    } 
+    setFocus(false);
+  }
+
   return (
     <Form
       // TODO: @finn: make the search query logic work
@@ -34,23 +40,26 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted}) 
         "flex flex-col",
         {"shrink": isSubmitted},
         {"grow": !isSubmitted}
+      
   )}
     >
       <input type='hidden' name="filterType" value="search" />
 
       <textarea 
       className= {cn(
-          "border pt-5 px-5 text-start font-bold text-gray-700 text-4xl",
+          "pt-5 pl-5 text-start tracking-tight font-bold text-gray-700 text-4xl",
           {"grow": !isSubmitted},
-          {"h-fit pb-5": isSubmitted},
+          {"h-fit": isSubmitted},
           {"cursor-not-allowed": isSubmitted}
       )}
         type="text"
         name="searchString"
         value = {searchTerm}
-        placeholder="Enter a Feature Request Idea"
+        placeholder={"Enter a Feature Description"}
         onChange={handleInput}
         readOnly = {isSubmitted}
+        onFocus={() => setFocus(true)}
+        onBlur={() => handleBlur()}
       />
 
       {!isSubmitted && searchTerm.length > 0 && (

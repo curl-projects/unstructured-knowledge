@@ -1,15 +1,35 @@
+import { IoExpand, IoContract } from 'react-icons/io5';
+import {AiOutlineArrowUp} from 'react-icons/ai';
 
-export default function MessageStreamMetadata(props){
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
-  function handleChange(event){
-    console.log("CHANGED SELECT!", event.target.value)
-  }
 
-  return(
-    <div className='sticky top-0 p-2 bg-slate-100/50 backdrop-blur-lg text-sm'>
-      {props.zoomObject && <p>Viewing data for Cluster {props.zoomObject.id}</p>}
-      <p className="text-gray-800 font-semibold">{props.data.length} <span className="text-gray-400 font-normal"> Feature Requests</span> </p> 
-      <div>
+export default function MessageStreamMetadata({isExpanded, setIsExpanded, scrollToTop, ...props }) {
+
+  
+  return (
+    <div className='flex w-full justify-between items-center sticky top-0 px-4 py-2 z-10 bg-slate-100/90 backdrop-blur-sm text-xs'>
+      <p
+        className="text-gray-800 font-bold"
+      >
+        {numberWithCommas(props.data.length)} <span className="text-gray-400 font-medium"> Feature Requests</span>
+      </p>
+
+      <div className='flex gap-1'>
+
+        <AiOutlineArrowUp 
+        size = {20}
+        className="inline-block bg-slate-50 cursor-pointer hover:bg-white rounded-full  p-1 text-gray-500"
+        onClick = {() => scrollToTop()}
+        />
+
+        <div onClick={() => setIsExpanded(!isExpanded)}>
+          {isExpanded ?
+            <IoContract size={22} className="inline-block bg-slate-50 cursor-pointer hover:bg-white rounded-full  p-1 text-gray-500" /> :
+            <IoExpand size={22} className="inline-block bg-slate-50 cursor-pointer hover:bg-white rounded-full p-1 text-gray-500" />}
+        </div>
       </div>
     </div>
   )

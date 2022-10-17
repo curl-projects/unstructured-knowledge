@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Editor, EditorState, RichUtils } from 'draft-js'
 import Toolbar from '~/components/TextEditor/Toolbar';
+import cn from 'classnames';
 
 export default function RichTextEditor({ isSubmitted }) {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
@@ -16,11 +17,19 @@ export default function RichTextEditor({ isSubmitted }) {
 
   }
 
-
   return (
-    <div id='draft-editor' className='relative max-h-full overflow-auto flex flex-col gap-0'>
-      <Toolbar editorState={editorState} setEditorState={setEditorState} />
-      <Editor editorState={editorState}
+    <div
+      id='draft-editor' 
+      className={cn(
+        'relative max-h-full overflow-auto flex flex-col gap-0',
+        {"bg-slate-100 shrink": !isSubmitted},
+        {"bg-white grow": isSubmitted},
+        )}
+        
+    >
+      {isSubmitted && <Toolbar editorState={editorState} setEditorState={setEditorState} />}
+      <Editor 
+        editorState={editorState}
         onChange={setEditorState}
         handleKeyCommand={handleKeyCommand}
         readOnly={!isSubmitted}
