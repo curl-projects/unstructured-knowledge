@@ -2,10 +2,12 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "build": "remix build",
-    "deploy": "fly deploy --remote-only",
-    "dev": "remix dev",
-    "start": "remix-serve build"
+    "start": "remix-serve build",
+    "build": "npm run build:css && remix build",
+    "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
+    "dev": "concurrently \"npm run dev:css\" \"remix dev\"",
+    "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
+    "deploy": "fly deploy --remote-only"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -26,8 +28,12 @@
   "devDependencies": {
     "@remix-run/dev": "^1.7.2",
     "@remix-run/eslint-config": "^1.7.2",
+    "autoprefixer": "^10.4.12",
+    "concurrently": "^7.4.0",
     "eslint": "^8.23.1",
-    "prisma": "^4.4.0"
+    "postcss": "^8.4.18",
+    "prisma": "^4.4.0",
+    "tailwindcss": "^3.1.8"
   },
   "engines": {
     "node": ">=14"
