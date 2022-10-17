@@ -9,6 +9,8 @@ import {
 
 import styles from "../app/styles/app.css";
 
+import ExperimentSelector from "~/components/ExperimentSelector/ExperimentSelector"
+
 export function links() {
   return [{rel: "stylesheet", href: styles}];
 }
@@ -27,6 +29,7 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <ExperimentSelector />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

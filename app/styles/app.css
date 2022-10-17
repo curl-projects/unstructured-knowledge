@@ -536,6 +536,18 @@ video {
   top: 0px;
 }
 
+.bottom-0 {
+  bottom: 0px;
+}
+
+.bottom-10 {
+  bottom: 2.5rem;
+}
+
+.left-10 {
+  left: 2.5rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -864,14 +876,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-gray-800\/80 {
-  color: rgb(31 41 55 / 0.8);
-}
-
-.text-gray-600\/20 {
-  color: rgb(75 85 99 / 0.2);
 }
 
 .filter {

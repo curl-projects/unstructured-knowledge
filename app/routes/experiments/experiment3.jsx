@@ -60,8 +60,6 @@ export default function ExperimentThree() {
   const [isSubmitted, setSubmitted] = useState(false);
   const [isFocused, setFocus] = useState(false);
 
-  
-
 
   useEffect(() => {
     console.log("INDEX DATA", data)

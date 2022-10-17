@@ -50,7 +50,6 @@ export default function TextBoxSearchBar({ resetSearchData, isSubmitted, setSubm
 
   return (
     <Form
-      // TODO: @finn: make the search query logic work
       method="post"
       className={cn(
         "flex flex-col",
