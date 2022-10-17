@@ -124,7 +124,7 @@ export default function ExperimentOne() {
 
   return (
     <div className="relative  md:p-24 lg:px-32 lg:py-22 xl:px-56 xl:py-24 2xl:px-52 2xl:py-32 h-screen w-screen">
-      <div className="h-full w-full bg-gray-100 border flex">
+      <div className="h-full w-full border border-gray-200  flex">
         <div
           className={cn(
             "bg-white bg-clip-border  grow flex flex-col relative transition-all duration-500 ease-in-out",
