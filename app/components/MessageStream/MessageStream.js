@@ -1,11 +1,10 @@
-import { useEffect } from "react"
+import { useState } from "react"
 import MessageStreamMetadata from "~/components/MessageStream/MessageStreamMetadata"
 import MessageCard from "~/components/MessageStream/MessageCard"
 
 export default function MessageStream(props){
-  // useEffect(()=>{
-  //   console.log("MESSAGE STREAM DATA", props.data)
-  // }, [props])
+  
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return(
     <>
@@ -14,11 +13,14 @@ export default function MessageStream(props){
         <MessageStreamMetadata
           data={props.data}
           zoomObject={props.zoomObject}
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
           />
         {props.data.map((cardData, idx) => (
           <MessageCard
             key={idx}
             cardData={cardData}
+            isExpanded = {isExpanded}
             />
         ))}
       </div>

@@ -40,7 +40,7 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted}) 
 
       <textarea 
       className= {cn(
-          "border pt-5 px-5 text-start font-bold text-gray-700 text-4xl",
+          "pt-5 px-5 text-start tracking-tight font-bold text-gray-700 text-4xl",
           {"grow": !isSubmitted},
           {"h-fit pb-5": isSubmitted},
           {"cursor-not-allowed": isSubmitted}

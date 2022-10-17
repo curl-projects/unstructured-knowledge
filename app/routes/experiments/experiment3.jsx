@@ -120,16 +120,16 @@ export default function ExperimentOne() {
   }
 
   return (
-    <div className="relative md:p-24 lg:p-32 h-screen w-screen flex border border-gray-200 rounded-lg">
-      <div className="bg-white grow flex flex-col relative">
+    <div className="relative md:p-24 lg:p-32 xl:p-40 2xl:p-52 h-screen w-screen flex border border-gray-200 rounded-lg">
+      <div className="bg-white border grow flex flex-col relative">
         <SearchBar
           resetSearchData={resetSearchData}
-          isSubmitted = {isSubmitted}
-          setSubmitted = {setSubmitted}
+          isSubmitted={isSubmitted}
+          setSubmitted={setSubmitted}
         />
-      <TextEditor isSubmitted = {isSubmitted} />
+        <TextEditor isSubmitted={isSubmitted} />
       </div>
-      <div className='bg-gray-100 overflow-auto pl-10 pr-8 xl:w-3/5 md:w-3/5 sm:w-3/5'>
+      <div className='bg-gray-100 overflow-auto pl-10 pr-8 xl:w-2/5 md:w-3/5 sm:w-3/5'>
         <MessageStream
           data={topLevelStreamDataObj}
           zoomObject={zoomObject}

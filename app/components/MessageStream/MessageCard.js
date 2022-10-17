@@ -5,10 +5,11 @@ import cn from "classnames";
 import { AiOutlinePushpin } from "react-icons/ai";
 
 
-export default function MessageCard(props) {
+export default function MessageCard({ isExpanded, ...props}) {
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isPinned, setIsPinned] = useState(false);
+  const [isCardExpanded, setIsCardExpanded] = useState(false);
+  const [isPinned, setIsPinned] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   // const options = {day: 'numeric', month: "long", year: "numeric"};
   // const date = props.cardData.created_at ? new Date(props.cardData.created_at).toLocaleDateString('default', options ) : "n.d.";
@@ -22,6 +23,7 @@ export default function MessageCard(props) {
       .attr('stroke', 'red')
       .attr("r", 20)
 
+    setIsHovered(true);
   }
   function handleMouseOut(event, fr_id) {
     d3.select(`#fr-${fr_id}`)
@@ -31,6 +33,8 @@ export default function MessageCard(props) {
       .ease(d3.easeCubicInOut)
       .attr("r", 5)
       .attr('stroke', 'none')
+
+    setIsHovered(false);
   }
 
   // remove hyphen at start or numbers
@@ -47,33 +51,37 @@ export default function MessageCard(props) {
       className='messageCard relative'
       onMouseOver={event => handleMouseOver(event, props.cardData.fr_id)}
       onMouseOut={event => handleMouseOut(event, props.cardData.fr_id)}
-      onClick={() => setIsExpanded(!isExpanded)}
     >
-      <div className='bg-white px-2 py-1 rounded-md leading-5 text-sm text-gray-500 hover:text-gray-900 font-medium'>
+      <div 
+        onClick={() => setIsCardExpanded(!isCardExpanded)}
+        className={cn(
+          'bg-white px-2 py-1 cursor-pointer tracking-tight rounded-md leading-5 text-sm text-gray-600 font-medium',
+          {"text-gray-800": isHovered}
+        )}
+      >
         {props.cardData && cleanSummary}
       </div>
 
-      {isExpanded && (
+      {(isExpanded || isCardExpanded) && (
         <div
           className={cn(
-            "flex flex-col gap-2 p-",
+            "flex flex-col gap-2 px-3 py-2 text-sm tracking-tight text-gray-600/90 font-normal",
           )}>
-          <p>{props.cardData && props.cardData.author}</p>
-          <p>{props.cardData.message}</p>
+          <p className='mt-2'><span className='text-gray-400'>@</span>{props.cardData && props.cardData.author}</p>
+          <p className=' text-gray-700 leading-5'>{props.cardData.message}</p>
         </div>
       )}
 
       <div className='absolute top-2 -left-8'>
-        <p className='text-sm text-gray-400'>
           <AiOutlinePushpin
             size={22}
             onClick = {() => setIsPinned(!isPinned)}
             className={cn(
-              "bg-slate-200 rounded-full m-1 p-1",
-              {"visible": isPinned},
-              {"visible": !isPinned}
+              "bg-slate-200 cursor-pointer hover:bg-slate-300 rounded-full m-1 p-1",
+              {"visible": isHovered},
+              {"invisible": !isHovered}
             )} />
-        </p>
+        
       </div>
     </div>
   )
