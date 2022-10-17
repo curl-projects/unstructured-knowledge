@@ -2,20 +2,17 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import cn from "classnames";
 
-export default function SearchBar({resetSearchData, isSubmitted, setSubmitted}) {
-
-  
-  const [searchTerm, setSearchTerm] = useState("");
+export default function SearchBar({resetSearchData, isSubmitted, setSubmitted, searchTerm, setSearchTerm}) {
 
   const handleInput = (event) => {
     setSearchTerm(event.target.value);
-    resetSearchData();
   };
   
   const submitIfFull = (event) => {
     if (searchTerm.length > 0) {
       event.preventDefault();
       setSubmitted(true);
+      resetSearchData();
     } else {
       event.preventDefault();
     }
@@ -42,13 +39,13 @@ export default function SearchBar({resetSearchData, isSubmitted, setSubmitted}) 
       className= {cn(
           "pt-5 px-5 text-start tracking-tight font-bold text-gray-700 text-4xl",
           {"grow": !isSubmitted},
-          {"h-fit pb-5": isSubmitted},
+          {"h-fit": isSubmitted},
           {"cursor-not-allowed": isSubmitted}
       )}
         type="text"
         name="searchString"
         value = {searchTerm}
-        placeholder="Enter a Feature Request Idea"
+        placeholder={"Enter a Feature Description"}
         onChange={handleInput}
         readOnly = {isSubmitted}
       />

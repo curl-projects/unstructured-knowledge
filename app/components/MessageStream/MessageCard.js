@@ -5,11 +5,13 @@ import cn from "classnames";
 import { AiOutlinePushpin } from "react-icons/ai";
 
 
-export default function MessageCard({ isExpanded, ...props}) {
+export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props}) {
 
   const [isCardExpanded, setIsCardExpanded] = useState(false);
-  const [isPinned, setIsPinned] = useState(true);
+  // const [isPinned, setIsPinned] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+
+  
 
   // const options = {day: 'numeric', month: "long", year: "numeric"};
   // const date = props.cardData.created_at ? new Date(props.cardData.created_at).toLocaleDateString('default', options ) : "n.d.";
@@ -72,14 +74,14 @@ export default function MessageCard({ isExpanded, ...props}) {
         </div>
       )}
 
-      <div className='absolute top-2 -left-8'>
+      <div className='absolute top-1 -left-8'>
           <AiOutlinePushpin
             size={22}
-            onClick = {() => setIsPinned(!isPinned)}
+            onClick = {() => pinCard(props.cardData.fr_id)}
             className={cn(
               "bg-slate-200 cursor-pointer hover:bg-slate-300 rounded-full m-1 p-1",
-              {"visible": isHovered},
-              {"invisible": !isHovered}
+              {"visible": isHovered || isPinned},
+              {"invisible": !isHovered && !isPinned}
             )} />
         
       </div>
