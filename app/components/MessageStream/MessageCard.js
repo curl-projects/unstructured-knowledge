@@ -64,7 +64,7 @@ export default function MessageCard({ isExpanded, isPinned,  pinCard, ...props})
         {props.cardData && cleanSummary}
       </div>
 
-      {(isExpanded || isCardExpanded) && (
+      {(isCardExpanded || isExpanded) && (
         <div
           className={cn(
             "flex flex-col gap-2 px-3 py-2 text-sm tracking-tight text-gray-600/90 font-normal",

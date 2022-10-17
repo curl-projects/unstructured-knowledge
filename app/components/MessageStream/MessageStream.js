@@ -49,7 +49,7 @@ export default function MessageStream(props) {
           scrollToTop={scrollToTop}
           paneRef={paneRef}
         />
-        <div className="pl-10 pr-8">
+        <div className="pl-10 pr-8 flex flex-col gap-2">
           {pinnedCards.map((cardData, idx) => (
             <MessageCard
               key={cardData.fr_id}

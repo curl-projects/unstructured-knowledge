@@ -140,7 +140,7 @@ export default function ExperimentOne() {
         />
         <TextEditor isSubmitted={isSubmitted} />
       </div>
-      <div className='bg-gray-100 overflow-auto xl:w-2/5 md:w-3/5 sm:w-3/5'>
+      <div className='bg-gray-100 overflow-y overflow-x-hidden xl:w-2/5 md:w-3/5 sm:w-3/5'>
         <MessageStream
           data={topLevelStreamDataObj}
           zoomObject={zoomObject}
