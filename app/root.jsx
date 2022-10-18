@@ -7,12 +7,16 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import styles from "../app/styles/app.css";
+import styles from "~/styles/app.css";
+import globalStyles from "~/styles/global.css"
 
 import ExperimentSelector from "~/components/ExperimentSelector/ExperimentSelector"
 
 export function links() {
-  return [{rel: "stylesheet", href: styles}];
+  return [
+    {rel: "stylesheet", href: styles},
+    {rel: 'stylesheet', href: globalStyles}
+];
 }
 
 export const meta = () => ({

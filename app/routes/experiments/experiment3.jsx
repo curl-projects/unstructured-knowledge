@@ -60,18 +60,10 @@ export default function ExperimentThree() {
   const [isSubmitted, setSubmitted] = useState(false);
   const [isFocused, setFocus] = useState(false);
 
-
-  useEffect(() => {
-    console.log("INDEX DATA", data)
-    const card = data.filter(a => a.fr_id === "9378617501356155197428190602647415039")
-    console.log('TROUBLE CARD:', card)
-  }, [data])
-
   useEffect(() => {
     console.log("ACTION DATA", actionData)
     if (actionData?.filterType === 'search') {
       if (actionData.knnIDs) {
-        console.log("EXECUTING!")
         filterSearchedData(data, actionData.knnIDs, setTopLevelStreamDataObj, setSearchResults)
       }
     }
