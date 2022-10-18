@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
 
 export function loader(){
-  return redirect('experiments/1')
+  return redirect('1')
 }

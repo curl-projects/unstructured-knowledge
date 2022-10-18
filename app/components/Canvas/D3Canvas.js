@@ -117,7 +117,7 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
     }
 
     function renderRegions(){
-      console.log("RENDERING REGIONS!")
+      console.log("RENDERING REGIONS!", regions)
       const regionNodes = d3.select("#regionlayer")
         .selectAll('rect')
         .data(regions)
@@ -252,11 +252,14 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
       const margin = {top: 0, right: 0, bottom: 0, left: 0};
       const width = ref.current.clientWidth;
       const height = ref.current.clientHeight;
+      console.log("CURRENT REF!!!!", ref.current)
+      console.log("CLIENT DIMS", width, height)
 
       svg
         .transition()
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", [0, 0, width, height])
+
 
       // X-AXIS
       var x = d3.scaleLinear()

@@ -86,19 +86,24 @@ export default function D3CanvasScaffold(props){
 
     // GENERATOR FUNCTIONS
     function generateRegionCoords(data, labelName){
-
       const svg = d3.select('svg')
 
-      const viewBox = svg.attr("viewBox").split(",")
+
+      const viewBox = svg.attr("viewBox").split(" ")
+      console.log("VIEWBOX!!!", viewBox)
+
       const svgDims = {
         height: parseFloat(viewBox[3]),
         width: parseFloat(viewBox[2]),
       }
 
+      console.log("SVG DIMS", svgDims)
+
       const labels = data.map(a => a[labelName])
       const regionLabels = Array.from(new Set(labels))
       const regionCoordsArray = []
 
+      console.log("REGION LABELS", regionLabels)
 
       const nRows = Math.ceil(regionLabels.length/2)
       var regionHeight = 200
