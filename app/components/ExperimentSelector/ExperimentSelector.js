@@ -17,7 +17,7 @@ export default function ExperimentSelector(){
 
   return(
     <div className={cn("absolute bottom-10 left-10 bg-gray-100 xl:w-2/12 md:w-3/12 sm:w-5/12 overflow-x-hidden overflow-y border transition-opacity",
-                     {'opacity-25' : !isHovered},
+                     {'opacity-50' : !isHovered},
                      {'h-10': isRolledUp},
                      {'h-52': !isRolledUp}
                    )}
