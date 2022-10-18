@@ -42,7 +42,7 @@ export default function TextBoxSearchBar({ resetSearchData, isSubmitted, setSubm
   }
 
   const boidsBg = {
-    backgroundImage: `url(${isSubmitted? "" : boids})`,
+    // backgroundImage: `url(${isSubmitted? "" : boids})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
