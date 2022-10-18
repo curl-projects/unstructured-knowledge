@@ -1,0 +1,7 @@
+.experimentCard {
+  background-color: #fafafa;
+  border: 1px solid #e7e7e7;
+  border-radius: 0px;
+  padding: 10px;
+  text-overflow: clip;
+}

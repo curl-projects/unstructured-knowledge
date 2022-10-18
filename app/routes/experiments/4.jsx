@@ -5,12 +5,19 @@ import * as d3 from "d3"
 
 // REACT & REMIX
 import { useState, useEffect } from "react";
-import { generateSearchVector, getKNNfromSearchVector } from "~/models/search-embeddings.server"
 import { useActionData } from "@remix-run/react"
 import { json } from '@remix-run/node';
 
+// MODELS
+import { generateSearchVector, getKNNfromSearchVector } from "~/models/search-embeddings.server"
+
+// UTILITIES
+import { filterSearchedData } from "~/utils/filterSearchedData.js"
+import { manipulateInputData } from "~/utils/manipulateInputData.js"
+
 // COMPONENTS
-import TextEditor from "~/components/TextEditor/TextEditor.js"
+import GeneralTextEditor from "~/components/TextEditor/GeneralTextEditor/GeneralTextEditor.js"
+import AITextEditor from "~/components/AITextEditor/AITextEditor.js"
 import D3CanvasScaffold from "~/components/Canvas/D3CanvasScaffold.js"
 import MessageStream from "~/components/MessageStream/MessageStream.js"
 
@@ -18,15 +25,14 @@ import MessageStream from "~/components/MessageStream/MessageStream.js"
 import d from "~/mock-data/final_output.json"
 
 // STYLES
-import experimentTwoStylesheetUrl from "~/styles/experimentTwo.css"
+import experimentFourStylesheetUrl from "~/styles/experimentFour.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
-const data = d.slice(100).map((el) => ({...el, "region": Math.floor(Math.random()*4)}))
-                          .map((el) => ({...el, "regionCluster": `${el.region}-${Math.floor(Math.random()*6)}`}))
+const data = manipulateInputData(d)
 
 export const links = () => {
   return [
-    { rel: "stylesheet", href: experimentTwoStylesheetUrl},
+    { rel: "stylesheet", href: experimentFourStylesheetUrl},
     { rel: "stylesheet", href: draftjsStylesheetUrl},
   ]
 }
@@ -66,7 +72,7 @@ export default function ExperimentOne() {
     console.log("ACTION DATA:", actionData)
     if(actionData?.filterType === 'search'){
       if(actionData.knnIDs){
-        filterSearchedData(actionData.knnIDs)
+        filterSearchedData(data, actionData.knnIDs, setTopLevelStreamDataObj, setSearchResults)
       }
     }
   }, [actionData])
@@ -87,13 +93,6 @@ export default function ExperimentOne() {
     setTopLevelStreamDataObj(data)
   }
 
-  function filterSearchedData(knnIDs){
-    const filteredResults = knnIDs.filter(a => a['score'] > 0.25)
-    let dataIDs = filteredResults.map(a => a.id)
-    const filteredData = data.filter(({fr_id}) => dataIDs.includes(fr_id))
-    setTopLevelStreamDataObj(filteredData)
-    setSearchResults(dataIDs)
-  }
 
   function resetSearchData(){
     setTopLevelStreamDataObj(data)
@@ -119,8 +118,13 @@ export default function ExperimentOne() {
 
   return (
     <div className="pageWrapper">
-      <div className="textBoxWrapper">
-        <TextEditor />
+      <div className="textWrapper">
+        <div className="textBoxWrapper">
+          <GeneralTextEditor />
+        </div>
+        <div className="aiTextBoxWrapper">
+          <AITextEditor />
+        </div>
       </div>
       <div className='messageStreamWrapper'>
         <MessageStream
@@ -128,17 +132,6 @@ export default function ExperimentOne() {
           resetSearchData={resetSearchData}
           zoomObject={zoomObject}
           setZoomObject={setZoomObject}
-          />
-      </div>
-      <div className="canvasWrapper">
-        <D3CanvasScaffold
-          data={topLevelCanvasDataObj}
-          searchResults={searchResults}
-          filterBrushedData={filterBrushedData}
-          resetBrushFilter={resetBrushFilter}
-          zoomObject={zoomObject}
-          setZoomObject={setZoomObject}
-          resetZoomedData={resetZoomedData}
           />
       </div>
     </div>
