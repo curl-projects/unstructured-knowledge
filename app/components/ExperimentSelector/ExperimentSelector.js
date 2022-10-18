@@ -1,14 +1,13 @@
-import { Link } from "@remix-run/react";
 import { useEffect, useState } from 'react';
 import ExperimentCard from "~/components/ExperimentSelector/ExperimentCard";
 import cn from "classnames";
 import {AiOutlineArrowUp} from 'react-icons/ai';
 
 const publicExperiments = [
-  { name: "Experiment One", url: "experimentOne"},
-  { name: "Experiment Two", url: "experimentTwo"},
-  { name: "Experiment Three", url: "experimentThree", hypothesis: "Users can sense-make about product development by reading contextually important information and making scrappy notes on it"},
-  { name: "Experiment Four", url: "experimentFour"},
+  { name: "Experiment One", url: "1", hypothesis: "INCOMPLETE"},
+  { name: "Experiment Two", url: "2", hypothesis: "INCOMPLETE"},
+  { name: "Experiment Three", url: "3", hypothesis: "Users can sense-make about product development by reading contextually important information and making scrappy notes on it"},
+  { name: "Experiment Four", url: "4", hypothesis: "INCOMPLETE"},
 ]
 
 export default function ExperimentSelector(){
