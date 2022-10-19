@@ -11,5 +11,5 @@ datasource db {
 }
 
 model Test {
-  name String
+  name String @unique
 }

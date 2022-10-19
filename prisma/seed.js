@@ -1,8 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+const db = new PrismaClient()
 
 async function main(){
-  return {}
+  await Promise.all(
+    getTests().map((test)=> {
+      return db.test.create({ data: test})
+    })
+  )
 }
 
 
@@ -23,3 +27,11 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+
+function getTests(){
+  return [
+    { name: "testOne"},
+    { name: "testTwo"}
+  ]
+}
