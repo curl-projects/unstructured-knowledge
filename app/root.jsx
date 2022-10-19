@@ -9,14 +9,16 @@ import {
 
 import styles from "~/styles/app.css";
 import globalStyles from "~/styles/global.css"
+import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
 import ExperimentSelector from "~/components/ExperimentSelector/ExperimentSelector"
 
 export function links() {
   return [
-    {rel: "stylesheet", href: styles},
-    {rel: 'stylesheet', href: globalStyles}
-];
+        {rel: "stylesheet", href: styles},
+        {rel: "stylesheet", href: globalStyles},
+        {rel: "stylesheet", href: draftjsStylesheetUrl},
+    ]
 }
 
 export const meta = () => ({
