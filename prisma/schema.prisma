@@ -2,14 +2,16 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "cockroachdb"
-  url      = env("DATABASE_URL")
+    // provider = "mysql"
+    url = env("DATABASE_URL")
 }
 
-model Test {
-  name String
+model TextBox {
+    id Int @id @default(sequence())
+    editorContent String
 }
