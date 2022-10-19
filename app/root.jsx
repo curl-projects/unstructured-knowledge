@@ -33,7 +33,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <ExperimentSelector />
+        {/*<ExperimentSelector />*/}
         <Outlet />
         <ScrollRestoration />
         <Scripts />

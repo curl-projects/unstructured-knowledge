@@ -12,7 +12,7 @@ function usePrevious(value) {
 
 export default function D3Canvas({ data, clusters, regions, searchResults, filterBrushedData,
                                    resetBrushFilter, zoomObject, setZoomObject,
-                                   displayControl, resetZoomedData}) {
+                                   displayControl, resetZoomedData, className}) {
   const xDomain = [0, 1]
   const yDomain = [0, 1]
 
@@ -174,6 +174,7 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
   }, [data, clusters, regions, displayControl])
 
   // ZOOM ANIMATIONS
+  //
   useEffect(()=>{
     console.log("ZOOMOBJ", zoomObject)
     function zoomed(event){
@@ -217,6 +218,7 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
         const k = 0.1*Math.min(ref.current.clientWidth / (x1+2*margin - x0), ref.current.clientHeight / (y1+2*margin - y0));
         const tx = (ref.current.clientWidth - k * (x0 + x1)) / 2;
         const ty = (ref.current.clientHeight - k * (y0 + y1)) / 2;
+
         return [data[0][clusterIdName], d3.zoomIdentity.translate(tx, ty).scale(k)];
       }))
 
@@ -305,6 +307,7 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
           .attr('cx', d => x(d.xDim))
           .attr('cy', d => y(d.yDim))
           .attr('r', 5)
+          .attr('opacity', 0.5)
           .attr('fill', "#69b3a2")
               .on("mouseover", function(d){
                   generateAnnotation(d, event)
@@ -329,6 +332,7 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
           const [[x0, y0], [x1, y1]] = selection;
           dots.style("fill", "#69b3a2")
               .filter(d => x0 <= x(d.xDim) && x(d.xDim) < x1 && y0 <= y(d.yDim) && y(d.yDim) < y1)
+              .style('opacity', "1")
               .style("fill", "red")
               .data();
 
@@ -380,13 +384,12 @@ export default function D3Canvas({ data, clusters, regions, searchResults, filte
   );
 
   return (
-    <>
+    <div className={className}>
     <svg
       id="canvas-svg"
       ref={ref}
-      className='canvasSVG'
-    >
-    </svg>
-    </>
+      className='w-full h-full'
+    />
+    </div>
   );
 }

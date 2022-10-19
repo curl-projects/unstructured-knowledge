@@ -45,8 +45,7 @@ export default function MessageStream(props) {
 
   return (
     <>
-
-      <div ref={paneRef} className='flex relative flex-col align-middle pt-2 gap-2'>
+      <div ref={paneRef} className='flex bg-gray-100 overflow-auto h-full relative flex-col align-middle gap-2'>
         <MessageStreamMetadata
           data={props.data}
           zoomObject={props.zoomObject}
