@@ -125,7 +125,7 @@ export default function ExperimentFive() {
         setTopLevelStreamDataObj(data)
     }
 
-    const inRange = (numRequests, min = 2, max = 25) => {
+    const inRange = (numRequests, min = 2, max = 75) => {
         return numRequests >= min && numRequests <= max
     }
 
@@ -139,7 +139,7 @@ export default function ExperimentFive() {
                         zoomObject={zoomObject}
                         setZoomObject={setZoomObject}
                     />
-                    <Form method="post" className="absolute bottom-1">
+                    <Form method="post" className="absolute bottom-1 right-4">
                         <input
                             name="summarise"
                             type='hidden'
@@ -153,7 +153,7 @@ export default function ExperimentFive() {
                                 topLevelStreamDataObj.length) ?
                                 (
                                     `Summarise ${topLevelStreamDataObj.length} requests`
-                                ) : "Select 2-25 messages to summarise"}
+                                ) : "Select 2-75 messages to summarise"}
                         </button>
                     </Form>
                 </div>
@@ -168,12 +168,13 @@ export default function ExperimentFive() {
                         resetZoomedData={resetZoomedData}
                     />
                 </div>
-                <div className="w-96 px-4 py-4 bg-gray-100/40">
-                    <div className="text-2xl font-bold text-gray-500/50">
-                        GPT Summary
+                <div className="w-96 px-4 py-4 relative bg-gray-100/40">
+                    
+                    <div className="relative text-sm text-gray-600 text-medium leading-4 z-10">
+                    {summary}
                     </div>
-                    <div className="text-gray-500/80">
-                        {summary}
+                    <div className="text-2xl leading-8 absolute top-2 left-2 tracking-tight font-extrabold text-gray-200/50 z-0">
+                        GPT Summary
                     </div>
                 </div>
             </div>
