@@ -1,35 +1,38 @@
-import {ActionFunction, json} from "@remix-run/node"
 import {db} from "../../../models/db.server"
 import invariant from "tiny-invariant"
 import { convertFromRaw } from 'draft-js'
+import { ApiHandler, apiResponse } from "../../../utils/apiResponse"
 
 export const loader = () => {
-    return json({message: "must supply id"}, 400)
+    return apiResponse(400, "must supply id")
 }
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ApiHandler = async ({request}) => {
+
     if (request.method !== "POST") {
-        return json({message: "Method not allowed"}, 405)
+        return apiResponse(405)
     }
     const payload = await request.formData()
 
     const parsed_id = payload.get("id")
     if (parsed_id instanceof File) {
-        return json({message: "what are you trying to do here"}, 418)
+        return apiResponse(418, "what are you trying to do here")
     }
 
     const id = parseInt(parsed_id || "")
     const serializedContent = payload.get("serializedContent")
 
     // payload validation
+    if (isNaN(id) || id !== parseFloat(parsed_id || "")) {
+        return apiResponse(400, "must supply a valid argument for id")
+    }
+    if (typeof serializedContent !== "string") {
+        return apiResponse(400, "request must inlcude a content attribute of type string")
+    }
     try {
-        invariant(!isNaN(id) && id === parseFloat(parsed_id || ""),
-            "must supply a valid argument for id")
-        invariant(typeof serializedContent === "string",
-            "request must inlcude a content attribute of type string")
         convertFromRaw(JSON.parse(serializedContent))
     } catch (e) {
-        return json({message: e}, 400)
+        return apiResponse(400, "could not parse serializedContent")
     }
 
     // TODO: confirm existence of textBox and give better error for this
@@ -41,8 +44,8 @@ export const action: ActionFunction = async ({request}) => {
             where: {id},
             data: {serializedContent}
         })
-        return json({message: "success", new: update}, 200)
+        return apiResponse(200)
     } catch (e) {
-        return json({message: "server error"}, 500)
+        return apiResponse(500)
     }
 }

@@ -62,7 +62,7 @@ const RichTextEditor: React.FC<RichTextEditorType> = (props) => {
                             ref={editorRef}
                             readOnly={props.readOnly}
                             />
-                        <SyncIndicator syncState={syncState === "idle"? syncState : "syncing"}/>
+                        <SyncIndicator syncState={syncState}/>
                     </>
                     
                 )

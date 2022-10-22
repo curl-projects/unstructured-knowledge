@@ -1,28 +1,22 @@
-import {json, LoaderFunction} from "@remix-run/node"
 import {db} from "../../../models/db.server"
 import { TextBox } from "@prisma/client"
+import { apiResponse, ApiHandler } from "../../../utils/apiResponse"
 
-export const loader: LoaderFunction = async ({params}) => {
+
+export const loader: ApiHandler<{textBox: TextBox}> = async ({params}) => {
     if (!params.id) {
-        return json({message: "did not receive argument for id"}, 400)
+        return apiResponse(400, "did not receive argument for id")
     }
 
     const id = parseInt(params.id)
     if (isNaN(id) || (id !== parseFloat(params.id))) {
-        return json({message: "id must be parsable as int"}, 400)
+        return apiResponse(400, "id must be parsable as int")
     }
 
-    let textBox: TextBox | null;
-    try {
-        textBox = await db.textBox.findUnique({where: {id}})
-    } catch (e) {
-        console.log(e)
-        return json({message: "server error"}, 500)
-    }
-    
+    const textBox = await db.textBox.findUnique({where: {id}})
     if (textBox === null) {
-        return json({message: "not found in database"}, 404)
+        return apiResponse(404, "not found in database")
     }
 
-    return json({textBox}, 200)
+    return apiResponse(200, "success", {textBox})
 }
