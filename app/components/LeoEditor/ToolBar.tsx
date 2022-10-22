@@ -1,6 +1,7 @@
-import React from "react"
-import { EditorState } from "draft-js"
+import React, {useState} from "react"
+import { EditorState, RichUtils } from "draft-js"
 import { BiBold, BiItalic, BiUnderline, BiListUl, BiListOl, BiCode } from 'react-icons/bi'
+import ReactTooltip from "react-tooltip";
 
 const BLOCK_TYPES = [
     {label: 'UL', style: 'unordered-list-item', icon: <BiListUl />},
@@ -8,9 +9,9 @@ const BLOCK_TYPES = [
 ];
 
 const INLINE_STYLES = [
-    {label: 'Bold', style: 'BOLD', icon: <BiBold />},
-    {label: 'Italic', style: 'ITALIC', icon: <BiItalic />},
-    {label: 'Underline', style: 'UNDERLINE', icon: <BiUnderline />},
+    {label: 'Bold', style: 'BOLD', icon: <BiBold />, shortcut: "⌘ + B"},
+    {label: 'Italic', style: 'ITALIC', icon: <BiItalic />, shortcut: "⌘ + I"},
+    {label: 'Underline', style: 'UNDERLINE', icon: <BiUnderline />, shortcut: "⌘ + U"},
     {label: 'Monospace', style: 'CODE', icon: <BiCode />},
 ];
 
@@ -19,51 +20,73 @@ type StyleButtonType = {
     icon: JSX.Element
     onToggle: (style: string) => void
     style: string
+    shortcut?: string
 }
 
 const StyleButton: React.FC<StyleButtonType> = (props) => {
+
+    const tipId = "StyleButton-tip-" + props.style
+    const [hovered, setHovered] = useState(false)
     const className = `toolbar-button${props.active && "-selected"}` +
-        "bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md"
+        " bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md"
+    
     return (
-        <div
-            className={className}
-            onMouseDown={(e) => {
-                e.preventDefault()
-                props.onToggle(props.style)
-                }}>
-            {props.icon}
-        </div>
+        <>
+            <div
+                className={className}
+                data-tip={true}
+                data-for={tipId}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+                onMouseDown={(e) => {
+                    e.preventDefault()
+                    props.onToggle(props.style)
+                    }}>
+                {props.icon}
+            </div>
+            {props.shortcut &&
+                <ReactTooltip
+                    id={tipId}
+                    effect="solid"
+                    place="bottom"
+                    type="dark">
+                    <p style={{fontSize: "10px"}}>{props.shortcut}</p>
+                </ReactTooltip>}
+        </>
     )
 }
 
 type ToolBarType = {
-    editorState: EditorState
-    onToggleSelection: (style: string, inline: boolean) => void
+    editorState?: EditorState
+    setEditorState?: (current: EditorState) => void
 }
 
 const ToolBar: React.FC<ToolBarType> = (props) => {
-    const {editorState} = props
-    const inlineStyle = editorState.getCurrentInlineStyle()
-    const blockType = editorState
+    const {editorState, setEditorState} = props
+    const inlineStyle = editorState && editorState.getCurrentInlineStyle()
+    const blockType = editorState && editorState
         .getCurrentContent()
         .getBlockForKey(editorState.getSelection().getStartKey())
         .getType()
-
-    // console.log(editorState
-    //     .getCurrentContent()
-    //     .getBlockForKey(editorState.getSelection().getStartKey()))
-    // console.log(blockType)
+    
+    const handleToggleSelection = (style: string, inline: boolean) => {
+        if (editorState && setEditorState) {
+            const func = inline ? RichUtils.toggleInlineStyle : RichUtils.toggleBlockType
+            setEditorState(func(editorState, style))
+        }
+    }
 
     return (
-        <div className="flex mx-auto gap-2 bg-white">
+        <div id="editor-toolbar" className="flex mx-auto gap-2 bg-white">
             <div className="flex gap-0">
-                {INLINE_STYLES.map(({label, style, icon}) => (
+                {INLINE_STYLES.map(({label, style, icon, shortcut}) => (
                     <StyleButton
                         key={label}
-                        active={inlineStyle.has(style)}
+                        active={!!inlineStyle && inlineStyle.has(style)}
                         icon={icon}
                         style={style}
-                        onToggle={style => props.onToggleSelection(style, true)}/>
+                        onToggle={style => handleToggleSelection(style, true)}
+                        shortcut={shortcut}/>
                 ))}
             </div>
             <div className="flex gap-0">
@@ -73,7 +96,7 @@ const ToolBar: React.FC<ToolBarType> = (props) => {
                         active={blockType === style}
                         icon={icon}
                         style={style}
-                        onToggle={style => props.onToggleSelection(style, false)}
+                        onToggle={style => handleToggleSelection(style, false)}
                         />
                 ))}
             </div>

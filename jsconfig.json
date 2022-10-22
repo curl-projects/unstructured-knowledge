@@ -3,6 +3,7 @@
         "**/*.js",
         "**/*.jsx"
     ],
+    // "exclude": ["node_modules"],
     "compilerOptions": {
         "lib": [
             "DOM",

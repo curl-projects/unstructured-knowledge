@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "cockroachdb"
-    // provider = "mysql"
-    url = env("DATABASE_URL")
+    provider = "cockroachdb"
+    url      = env("DATABASE_URL")
 }
 
 model TextBox {
-    id Int @id @default(sequence())
-    editorContent String
+    id                Int      @id @default(sequence())
+    serializedContent String
+    localUpdatedAt    DateTime @default(now())
 }

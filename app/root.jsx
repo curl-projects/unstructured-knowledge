@@ -5,9 +5,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
+} from "@remix-run/react"
 
-import styles from "~/styles/app.css";
+import styles from "~/styles/app.css"
 import globalStyles from "~/styles/global.css"
 import draftjsStylesheetUrl from "draft-js/dist/Draft.css"
 
