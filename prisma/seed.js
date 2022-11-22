@@ -8,9 +8,9 @@ async function main() {
 
 const seedTextBox = async () => {
     prisma.textBox.upsert({
-        where: {id: 0},
+        where: {id: 1},
         update: {},
-        create: {editorContent: '{"blocks":[{"key":"9lhsg","text":"Hello world!","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}'}
+        create: {serializedContent: '{"blocks":[{"key":"9lhsg","text":"Hello world!","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}'}
     })
 }
 
